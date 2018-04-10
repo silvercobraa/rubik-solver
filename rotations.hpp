@@ -2,26 +2,33 @@
 #define ROTATIONS_HPP
 
 #include <string>
+#include <vector>
+#include <map>
 
-#define X 0
-#define Y 1
-#define Z 2
 #define CORNER 3
+
+// Este es el offset que tiene en la representación estado cada dirección.
+// Por ejemplo, si el estado comienza con rwb, significa que la pieza 0 tiene
+// colores rojo, blanco y azul en las coordenadas x, y y z respectivamente.
+enum Offset {X, Y, Z};
+
+// los colores del cubo resuelto, en el orden R U F L D B
+std::vector<char> color = {'b', 'r', 'y', 'g', 'o', 'w'};
 
 struct Node {
 	// este string contiene 3x8 caracteres, agrupados de a 3 consecutivos. Cada
 	// grupo de 3 caracteres corresponde a una esquina del cubo, y cada uno de
 	// dichos caracteres corresponden a los colores en la cara ortogonal al eje
-	// 'x' (front-back), 'y' (left-right), y 'z' (up-down), respectivamente.
+	// 'x' (right-left), 'y' (up-down), y 'z' (front-back), respectivamente.
 	// Las esquinas están numeradas de la siguiente forma:
-	//     0: back-left-up
-	//     1: front-left-up
-	//     2: front-right-up
-	//     3: back-right-up
-	//     4: back-right-down
-	//     5: front-right-down
-	//     6: front-left-down
-	//     7: back-left-down
+	//     0: right-up-front
+	//     1: right-up-back
+	//     2: right-down-front
+	//     3: right-down-back
+	//     4: left-up-front
+	//     5: left-up-back
+	//     6: left-down-front
+	//     7: left-down-back
 	// Cada caracter puede ser uno de los siguientes:
 	//     r: rojo
 	//     b: azul
@@ -39,10 +46,7 @@ struct Node {
 	}
 };
 
-
-typedef Node (*Action)(Node&);
-
-// intercambia 4 posiciones en 'circular fashion'
+// Intercambia 4 posiciones en 'circular fashion'. Es la base de todos los movimientos
 // p1 <- p0
 // p2 <- p1
 // p3 <- p2
@@ -86,64 +90,93 @@ static Node z_rotation(Node& node, int c0, int c1, int c2, int c3)
 	return {aux, &node};
 }
 
-Node F(Node& node) {
-	return x_rotation(node, 1, 2, 6, 5);
-}
-
-// F'
-Node F_(Node& node) {
-	return x_rotation(node, 5, 6, 2, 1);
-}
-
-Node B(Node& node) {
-	return x_rotation(node, 3, 0, 7, 4);
-}
-
-// B'
-Node B_(Node& node) {
-	return x_rotation(node, 4, 7, 0, 3);
-}
-
 
 Node R(Node& node) {
-	return y_rotation(node, 2, 3, 4, 5);
+	return x_rotation(node, 0, 1, 3, 2);
 }
 
 // R'
 Node R_(Node& node) {
-	return y_rotation(node, 5, 4, 3, 2);
+	return x_rotation(node, 2, 3, 1, 0);
 }
 
 Node L(Node& node) {
-	return y_rotation(node, 0, 1, 6, 7);
+	return x_rotation(node, 4, 6, 7, 5);
 }
 
 // L'
 Node L_(Node& node) {
-	return y_rotation(node, 7, 6, 1, 0);
+	return x_rotation(node, 5, 7, 6, 4);
 }
 
 Node U(Node& node) {
-	return z_rotation(node, 0, 3, 2, 1);
+	return y_rotation(node, 0, 4, 5, 1);
 }
 
 // U'
 Node U_(Node& node) {
-	return z_rotation(node, 1, 2, 3, 0);
+	return y_rotation(node, 1, 5, 4, 0);
 }
 
 Node D(Node& node) {
-	return z_rotation(node, 4, 7, 6, 5);
+	return y_rotation(node, 2, 3, 7, 6);
 }
 
 // U'
 Node D_(Node& node) {
-	return z_rotation(node, 5, 6, 7, 4);
+	return y_rotation(node, 6, 7, 3, 2);
 }
 
-Node x(Node& node) {
-	return
+
+Node F(Node& node) {
+	return z_rotation(node, 0, 2, 6, 4);
 }
+
+// F'
+Node F_(Node& node) {
+	return z_rotation(node, 4, 6, 2, 0);
+}
+
+Node B(Node& node) {
+	return z_rotation(node, 1, 5, 7, 3);
+}
+
+// B'
+Node B_(Node& node) {
+	return z_rotation(node, 3, 7, 1, 5);
+}
+
+static std::string solved_state = "bry""brw""boy""bow""gry""grw""goy""gow";
+;
+// el cubo se considera cuando se tienen los siguientes colores:
+//     azul en la cara frontal
+//     verde en la cara trasera
+//     blanco en la cara derecha
+//     amarillo  en la cara izquierda
+//     rojo en la cara superior
+//     naranjo en la cara inferior
+bool goal_test(Node& node) {
+	return node.state == solved_state;
+
+}
+
+typedef Node (*Action)(Node&);
+
+std::map<std::string, Action> actions = {
+	{"F", F},
+	{"F'", F_},
+	{"B", B},
+	{"B'", B_},
+	{"R", R},
+	{"R'", R_},
+	{"L", L},
+	{"L'", L_},
+	{"U", U},
+	{"U'", U_},
+	{"D", D},
+	{"D'", D_},
+};
+
 
 void print(Node& node) {
 	std::cout << "   +--+" << '\n';

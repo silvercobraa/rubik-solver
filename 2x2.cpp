@@ -14,40 +14,6 @@
 
 using namespace std;
 
-// el cubo se considera cuando se tienen los siguientes colores:
-//     azul en la cara frontal
-//     verde en la cara trasera
-//     blanco en la cara derecha
-//     amarillo  en la cara izquierda
-//     rojo en la cara superior
-//     naranjo en la cara inferior
-bool goal_test(Node& node) {
-	return node.state ==
-		"gyr"
-		"byr"
-		"bwr"
-		"gwr"
-		"gwo"
-		"bwo"
-		"byo"
-		"gyo"
-	;
-}
-
-map<string, Action> actions = {
-	{"F", F},
-	{"F'", F_},
-	{"B", B},
-	{"B'", B_},
-	{"R", R},
-	{"R'", R_},
-	{"L", L},
-	{"L'", L_},
-	{"U", U},
-	{"U'", U_},
-	{"D", D},
-	{"D'", D_},
-};
 
 set<string> visited;
 
@@ -181,7 +147,7 @@ void generate_all_states(Node& n) {
 }
 
 int main(int argc, char const *argv[]) {
-	string initial_state = "gyr""byr""bwr""gwr""gwo""bwo""byo""gyo";
+	string initial_state = solved_state;
 	Node root {initial_state, NULL};
 	root = scramble(root, "D  L  R'  F'  R ");
 	print(root);
