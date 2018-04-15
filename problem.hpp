@@ -235,25 +235,25 @@ Node z_(Node& node)
 static std::string solved_state = "bry""brw""boy""bow""gry""grw""goy""gow";
 
 // retorna la cantidad de piezas en posición incorrecta, dividida por 4
-// double heuristic(Node& node) {
-// 	static std::vector<std::string> solved = {"bry", "brw", "boy", "bow", "gry", "grw", "goy", "gow"};
-// 	int sum = 0;
-// 	for (int i = 0; i < solved.size(); i++) {
-// 		std::string sub = node.state.substr(i*3, 3);
-// 		std::sort(solved[i].begin(), solved[i].end());
-// 		bool correct_position = false;
-// 		do {
-// 			if (sub == solved[i]) {
-// 				correct_position = true;
-// 				break;
-// 			}
-// 		} while(std::next_permutation(solved[i].begin(), solved[i].end()));
-// 		if (!correct_position) {
-// 			sum++;
-// 		}
-// 	}
-// 	return sum / 4.0;
-// }
+double heuristic(Node& node) {
+	static std::vector<std::string> solved = {"bry", "brw", "boy", "bow", "gry", "grw", "goy", "gow"};
+	int sum = 0;
+	for (int i = 0; i < solved.size(); i++) {
+		std::string sub = node.state.substr(i*3, 3);
+		std::sort(solved[i].begin(), solved[i].end());
+		bool correct_position = false;
+		do {
+			if (sub == solved[i]) {
+				correct_position = true;
+				break;
+			}
+		} while(std::next_permutation(solved[i].begin(), solved[i].end()));
+		if (!correct_position) {
+			sum++;
+		}
+	}
+	return sum / 4.0;
+}
 
 // el cubo se considera cuando se tienen los siguientes colores:
 //     azul en la cara frontal
