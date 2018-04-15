@@ -112,6 +112,46 @@ bool bfs(Node& node) {
 	return false;
 }
 
+bool A_star(Node& node) {
+	set<pair<double,Node>> q;
+	set<string> v; // los estados visitados
+	map<string, string> move; // el movimiento con el cual se llego a este estado
+	map<string, string> parent_state; // el estado anterior
+
+	q.insert({0, node});
+	parent_state[node.state] = "";
+	move[node.state] = "";
+
+	while(!q.empty()) {
+		cout << v.size() << endl;
+		// cout << q.size() << endl;
+		Node parent = (*q.begin()).second;
+		q.erase(q.begin());
+		v.insert(parent.state);
+		if (goal_test(parent)) {
+			cout << "REACHED GOAL STATE" << endl;
+			print_trace(parent_state, move, parent.state);
+			return true;
+		}
+		for (auto act : actions) {
+			auto child = act.second(parent);
+			if (v.find(child.state) == v.end()) {
+				move[child.state] = act.first;
+				// cout << child.state << " -> " << act.first << endl;
+				parent_state[child.state] = parent.state;
+				// print(parent);
+				// cout << act.first << endl;
+				// print(child);
+				// DECOMENTAR ACA PARA BÚSQUEDA GREEDY
+				q.insert({child.cost + heuristic(child), child});
+				// DESCOMENTAR ACA PARA BÚSCQUEDA A*
+				// q.insert({child.cost + heuristic(child), child});
+			}
+		}
+	}
+	cout << "DIDN'T REACH GOAL STATE" << endl;
+	return false;
+}
 
 // iterative deepening search
 void ids(Node& root) {
@@ -132,6 +172,7 @@ Node scramble(Node root, string moves) {
 		root = actions[move](root);
 		cout << root.state << endl;
 	}
+	root.cost = 0;
 	return root;
 }
 
@@ -165,7 +206,7 @@ int main(int argc, char const *argv[]) {
 	string moves = read_moves();
 	root = scramble(root, moves);
 	print(root);
-	cout << heuristic(root) << endl;
+	A_star(root);
 	// sleep(5);
 	// ids(root);
 	// bfs(root);
