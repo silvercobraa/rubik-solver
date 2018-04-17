@@ -39,6 +39,7 @@ struct Node {
 	//     y: amarillo
 	std::string state;
 	struct Node* parent; // el nodo que se visitó antes que éste
+	int cost;
 	bool operator< (const Node& node) const {
 		return state < node.state;
 	}
@@ -68,7 +69,7 @@ static Node x_rotation(Node& node, int c0, int c1, int c2, int c3)
 	swap4(aux, c0*CORNER + Z, c1*CORNER + Y, c2*CORNER + Z, c3*CORNER + Y);
 	swap4(aux, c0*CORNER + X, c1*CORNER + X, c2*CORNER + X, c3*CORNER + X);
 	swap4(aux, c0*CORNER + Y, c1*CORNER + Z, c2*CORNER + Y, c3*CORNER + Z);
-	return {aux, &node};
+	return {aux, &node, node.cost + 1};
 }
 
 // rotaciones sobre el eje y
@@ -78,7 +79,7 @@ static Node y_rotation(Node& node, int c0, int c1, int c2, int c3)
 	swap4(aux, c0*CORNER + X, c1*CORNER + Z, c2*CORNER + X, c3*CORNER + Z);
 	swap4(aux, c0*CORNER + Y, c1*CORNER + Y, c2*CORNER + Y, c3*CORNER + Y);
 	swap4(aux, c0*CORNER + Z, c1*CORNER + X, c2*CORNER + Z, c3*CORNER + X);
-	return {aux, &node};
+	return {aux, &node, node.cost + 1};
 }
 
 // rotaciones sobre el eje z
@@ -88,7 +89,7 @@ static Node z_rotation(Node& node, int c0, int c1, int c2, int c3)
 	swap4(aux, c0*CORNER + X, c1*CORNER + Y, c2*CORNER + X, c3*CORNER + Y);
 	swap4(aux, c0*CORNER + Z, c1*CORNER + Z, c2*CORNER + Z, c3*CORNER + Z);
 	swap4(aux, c0*CORNER + Y, c1*CORNER + X, c2*CORNER + Y, c3*CORNER + X);
-	return {aux, &node};
+	return {aux, &node, node.cost + 1};
 }
 
 // ROTACIONES DE CARAS EN 90 GRADOS
@@ -160,7 +161,7 @@ Node x(Node& node) {
 	swap4(aux, 4*CORNER + Z, 5*CORNER + Y, 7*CORNER + Z, 6*CORNER + Y);
 	swap4(aux, 4*CORNER + X, 5*CORNER + X, 7*CORNER + X, 6*CORNER + X);
 	swap4(aux, 4*CORNER + Y, 5*CORNER + Z, 7*CORNER + Y, 6*CORNER + Z);
-	return {aux, &node};
+	return {aux, &node, node.cost + 2};
 }
 
 Node x_(Node& node) {
@@ -173,7 +174,7 @@ Node x_(Node& node) {
 	swap4(aux, 6*CORNER + Z, 7*CORNER + Y, 5*CORNER + Z, 4*CORNER + Y);
 	swap4(aux, 6*CORNER + X, 7*CORNER + X, 5*CORNER + X, 4*CORNER + X);
 	swap4(aux, 6*CORNER + Y, 7*CORNER + Z, 5*CORNER + Y, 4*CORNER + Z);
-	return {aux, &node};
+	return {aux, &node, node.cost + 2};
 }
 
 Node y(Node& node)
@@ -187,7 +188,7 @@ Node y(Node& node)
 	swap4(aux, 2*CORNER + X, 6*CORNER + Z, 7*CORNER + X, 3*CORNER + Z);
 	swap4(aux, 2*CORNER + Y, 6*CORNER + Y, 7*CORNER + Y, 3*CORNER + Y);
 	swap4(aux, 2*CORNER + Z, 6*CORNER + X, 7*CORNER + Z, 3*CORNER + X);
-	return {aux, &node};
+	return {aux, &node, node.cost + 2};
 }
 
 Node y_(Node& node)
@@ -201,7 +202,7 @@ Node y_(Node& node)
 	swap4(aux, 3*CORNER + X, 7*CORNER + Z, 6*CORNER + X, 2*CORNER + Z);
 	swap4(aux, 3*CORNER + Y, 7*CORNER + Y, 6*CORNER + Y, 2*CORNER + Y);
 	swap4(aux, 3*CORNER + Z, 7*CORNER + X, 6*CORNER + Z, 2*CORNER + X);
-	return {aux, &node};
+	return {aux, &node, node.cost + 2};
 }
 
 Node z(Node& node)
@@ -215,7 +216,7 @@ Node z(Node& node)
 	swap4(aux, 1*CORNER + X, 3*CORNER + Y, 7*CORNER + X, 5*CORNER + Y);
 	swap4(aux, 1*CORNER + Z, 3*CORNER + Z, 7*CORNER + Z, 5*CORNER + Z);
 	swap4(aux, 1*CORNER + Y, 3*CORNER + X, 7*CORNER + Y, 5*CORNER + X);
-	return {aux, &node};
+	return {aux, &node, node.cost + 2};
 }
 
 Node z_(Node& node)
@@ -229,7 +230,7 @@ Node z_(Node& node)
 	swap4(aux, 5*CORNER + X, 7*CORNER + Y, 3*CORNER + X, 1*CORNER + Y);
 	swap4(aux, 5*CORNER + Z, 7*CORNER + Z, 3*CORNER + Z, 1*CORNER + Z);
 	swap4(aux, 5*CORNER + Y, 7*CORNER + X, 3*CORNER + Y, 1*CORNER + X);
-	return {aux, &node};
+	return {aux, &node, node.cost + 2};
 }
 
 static std::string solved_state = "bry""brw""boy""bow""gry""grw""goy""gow";
