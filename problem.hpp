@@ -40,6 +40,7 @@ struct Node {
 	std::string state;
 	struct Node* parent; // el nodo que se visitó antes que éste
 	int cost;
+	int action;
 	bool operator< (const Node& node) const {
 		return state < node.state;
 	}
@@ -270,27 +271,32 @@ bool goal_test(Node& node) {
 
 typedef Node (*Action)(Node&);
 
-std::map<std::string, Action> actions = {
-	{"F", F},
-	{"F'", F_},
-	{"B", B},
-	{"B'", B_},
-	{"R", R},
-	{"R'", R_},
-	{"L", L},
-	{"L'", L_},
-	{"U", U},
-	{"U'", U_},
-	{"D", D},
-	{"D'", D_},
-	// {"x", x},
-	// {"x'", x_},
-	// {"y", y},
-	// {"y'", y_},
-	// {"z", z},
-	// {"z'", z_}
+std::vector<std::string> action_name = {
+	"F", "F'", "B", "B'",
+	"R", "R'", "L", "L'",
+	"U", "U'", "D", "D'",
+	//"x", "x'",
+	//"y", "y'",
+	//"z", "z'",
 };
 
+std::vector<Action> actions = {
+	F, F_, B, B_,
+	R, R_, L, L_,
+	U, U_, D, D_,
+	//x, x_,
+	//y, y_,
+	//z, z_,
+};
+
+std::map<std::string, Action> action_by_name = {
+	{"F", F}, {"F'", F_}, {"B", B}, {"B'", B_},
+	{"R", R}, {"R'", R_}, {"L", L}, {"L'", L_},
+	{"U", U}, {"U'", U_}, {"D", D}, {"D'", D_},
+	//{"x", x}, {"x'", x_},
+	//{"y", y}, {"y'", y_},
+	//{"z", z}, {"z'", z_},
+};
 
 void print(Node& node) {
 	std::cout << "   +--+" << '\n';

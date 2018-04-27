@@ -35,11 +35,9 @@ bool dfs(set<string>& visited, vector<string>& path, Node& node, int depth, int 
 	// visited.insert(node.state);
 	cout << depth << ' ' << visited.size() <<  endl;
 
-	// act.first: el nombre de la acción
-	// act.second: el puntero a la función
-	for (auto act : actions) {
-		Node child_node = act.second(node);
-		path.push_back(act.first);
+	for (int i = 0; i < actions.size(); i++) {
+		Node child_node = actions[i](node);
+		path.push_back(action_name[i]);
 		if (dfs(visited, path, child_node, depth + 1, max_depth)) {
 			return true;
 		}
@@ -95,10 +93,10 @@ bool bfs(Node& node) {
 			print_trace(parent_state, move, parent.state);
 			return true;
 		}
-		for (auto act : actions) {
-			auto child = act.second(parent);
+		for (int i = 0; i < actions.size(); i++) {
+			auto child = actions[i](parent);
 			if (v.find(child.state) == v.end()) {
-				move[child.state] = act.first;
+				move[child.state] = action_name[i];
 				// cout << child.state << " -> " << act.first << endl;
 				parent_state[child.state] = parent.state;
 				// print(parent);
@@ -126,6 +124,7 @@ bool A_star(Node& node) {
 		cout << v.size() << endl;
 		// cout << q.size() << endl;
 		Node parent = (*q.begin()).second;
+		// print(parent);
 		q.erase(q.begin());
 		v.insert(parent.state);
 		if (goal_test(parent)) {
@@ -133,19 +132,22 @@ bool A_star(Node& node) {
 			print_trace(parent_state, move, parent.state);
 			return true;
 		}
-		for (auto act : actions) {
-			auto child = act.second(parent);
+		// if (v.find(parent.state) != v.end()) {
+		// 	continue;
+		// }
+		for (int i = 0; i < actions.size(); i++) {
+			auto child = actions[i](parent);
 			if (v.find(child.state) == v.end()) {
-				move[child.state] = act.first;
+				move[child.state] = action_name[i];
 				// cout << child.state << " -> " << act.first << endl;
 				parent_state[child.state] = parent.state;
 				// print(parent);
 				// cout << act.first << endl;
 				// print(child);
 				// DECOMENTAR ACA PARA BÚSQUEDA GREEDY
-				q.insert({child.cost + heuristic(child), child});
+				// q.insert({heuristic(child), child});
 				// DESCOMENTAR ACA PARA BÚSCQUEDA A*
-				// q.insert({child.cost + heuristic(child), child});
+				q.insert({child.cost + heuristic(child), child});
 			}
 		}
 	}
@@ -169,7 +171,7 @@ Node scramble(Node root, string moves) {
 	string move;
 	while (ss >> move) {
 		cout << move << endl;
-		root = actions[move](root);
+		root = action_by_name[move](root);
 		cout << root.state << endl;
 	}
 	root.cost = 0;
@@ -186,7 +188,7 @@ void generate_all_states(Node& n) {
 		s.insert(parent.state);
 		cout << s.size() << endl;
 		for (auto act: actions) {
-			auto child = act.second(parent);
+			auto child = act(parent);
 			if (s.find(child.state) == s.end()) {
 				q.push(child);
 			}
@@ -216,5 +218,15 @@ int main(int argc, char const *argv[]) {
 	// }
 	//set<string> s;
 	// generate_all_states(root);
+	// for (auto x: actions) {
+	// 	auto n1 = x.second(root);
+	// 	for (auto y: actions) {
+	// 		auto n2 = y.second(n1);
+	// 		for (auto z: actions) {
+	// 			auto n3 = z.second(n2);
+	// 			cout << heuristic(n3) << '\t' << n2.state << endl;
+	// 		}
+	// 	}
+	// }
 	return 0;
 }
