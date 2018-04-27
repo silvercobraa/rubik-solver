@@ -15,46 +15,31 @@
 using namespace std;
 
 
-bool dfs(set<string>& visited, vector<string>& path, Node& node, int depth, int max_depth) {
-	// print(node);
+bool dfs(set<string>& visited, Node* node, int depth, int max_depth) {
 	if (depth > max_depth) {
 		return false;
 	}
-	// if (visited.find(node.state) != visited.end()) {
-	// 	return false;
-	// }
 	if (goal_test(node)) {
-		cout << "REACHED GOAL STATE" << endl;
-		for (auto s: path) {
-			cout << s << ' ';
-		}
-		cout << '\n';
+		solution(node);
 		return true;
 	}
-	// cout << "visiting " << node.state << endl;
-	// visited.insert(node.state);
 	cout << depth << ' ' << visited.size() <<  endl;
-
 	for (int act = 0; act < actions.size(); act++) {
-		// Node child_node = actions[i](node);
-		Node child = child_node(node, act);
-		path.push_back(action_name[act]);
-		if (dfs(visited, path, child, depth + 1, max_depth)) {
+		Node* child = child_node(node, act);
+		if (dfs(visited, child, depth + 1, max_depth)) {
 			return true;
 		}
-		path.pop_back();
 	}
 	return false;
 }
 
 
-bool dfs(Node& node, int depth, int max_depth) {
+bool dfs(Node* node, int depth, int max_depth) {
 	set<string> visited;
-	vector<string> path;
-	return dfs(visited, path, node, depth, max_depth);
+	return dfs(visited, node, depth, max_depth);
 }
 
-
+/*
 // TODO: imprimir correctamente la traza de movimientos: "move[s]"
 void print_trace(map<string, string>& parent, map<string, string>& move, string s) {
 	vector<string> path;
@@ -185,6 +170,6 @@ void generate_all_states(Node& n) {
 		}
 	}
 }
-
+*/
 
 #endif /* end of include guard: SEARCH_HPP */

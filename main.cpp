@@ -19,16 +19,21 @@ string read_moves() {
 }
 
 int main(int argc, char const *argv[]) {
-	string initial_state = solved_state;
-	Node root {initial_state, NULL};
+	Node* root = new Node();
+	root->state = solved_state;
+	root->parent = NULL;
+	root->cost = 0;
+	root->action = NO_ACTION;
+
 	string moves = read_moves();
-	root = scramble(root, moves);
-	print(root);
-	A_star(root);
-	// sleep(5);
+	scramble(root, moves);
+	print(*root);
+	dfs(root, 0, 4);
+
+	Node* child = child_node(root, 0);
+	printf("%p %p %p\n", root, child, child->parent);
 	// ids(root);
 	// bfs(root);
-	// dfs(root, 0, 3);
 	// for (auto s: visited) {
 	// 	cout << s << ' ';
 	// }

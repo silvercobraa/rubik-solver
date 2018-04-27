@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #define CORNER 3
+#define NO_ACTION -1
 
 // Este es el offset que tiene en la representación estado cada dirección.
 // Por ejemplo, si el estado comienza con rwb, significa que la pieza 0 tiene
@@ -38,9 +39,9 @@ struct Node {
 	//     g: verde
 	//     y: amarillo
 	std::string state;
-	struct Node* parent; // el nodo que se visitó antes que éste
 	int cost;
 	int action;
+	struct Node* parent; // el nodo que se visitó antes que éste
 	bool operator< (const Node& node) const {
 		return state < node.state;
 	}
@@ -266,8 +267,8 @@ double heuristic(Node& node) {
 //     amarillo  en la cara izquierda
 //     rojo en la cara superior
 //     naranjo en la cara inferior
-bool goal_test(Node& node) {
-	return node.state == solved_state;
+bool goal_test(Node* node) {
+	return node->state == solved_state;
 
 }
 
@@ -312,14 +313,24 @@ std::map<std::string, Action> action_by_name = {
 	//{"z", z}, {"z'", z_},
 };
 
-Node child_node(Node& parent, int action_id) {
-	Node child;
-	child.state = actions[action_id](parent.state);
-	child.action = action_id;
-	child.parent = NULL;
-	child.cost = parent.cost + action_cost[action_id];
+Node* child_node(Node* parent, int action_id) {
+	Node* child = new Node();
+	child->state = actions[action_id](parent->state);
+	child->action = action_id;
+	child->parent = parent;
+	child->cost = parent->cost + action_cost[action_id];
 	return child;
 }
+
+
+void solution(Node* node) {
+	while (node->action != NO_ACTION) {
+		std::cout << action_name[node->action] << ' ';
+		node = node->parent;
+	}
+	std::cout << std::endl;
+}
+
 
 void print(Node& node) {
 	std::cout << "   +--+" << '\n';
