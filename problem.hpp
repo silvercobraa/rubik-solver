@@ -291,6 +291,9 @@ std::vector<Action> actions = {
 	//z, z_,
 };
 
+// las rotaciones de 90 grados de una cara tienen costo 1, mientras que las
+// rotaciones en 90 grados del cubo completo tienen costo 2 (pues equivale a girar
+// 90 grados 2 caras opuestas)
 std::vector<int> action_cost = {
 	1, 1, 1, 1,
 	1, 1, 1, 1,

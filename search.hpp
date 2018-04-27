@@ -1,13 +1,13 @@
+#ifndef SEARCH_HPP
+#define SEARCH_HPP
+
 #include <iostream>
 #include <sstream>
-#include <unistd.h>
 #include <string>
 #include <algorithm>
 #include <vector>
 #include <set>
 #include <map>
-#include <chrono>
-#include <random>
 #include <queue>
 
 #include "problem.hpp"
@@ -168,20 +168,6 @@ void ids(Node& root) {
 	}
 }
 
-
-Node scramble(Node root, string moves) {
-	auto ss = stringstream(moves);
-	string move;
-	while (ss >> move) {
-		cout << move << endl;
-		// root = action_by_name[move](root);
-		root.state = action_by_name[move](root.state);
-		cout << root.state << endl;
-	}
-	root.cost = 0;
-	return root;
-}
-
 void generate_all_states(Node& n) {
 	set<string> s;
 	queue<Node> q;
@@ -200,37 +186,5 @@ void generate_all_states(Node& n) {
 	}
 }
 
-string read_moves() {
-	string moves;
-	getline(cin, moves);
-	return moves;
-}
 
-int main(int argc, char const *argv[]) {
-	string initial_state = solved_state;
-	Node root {initial_state, NULL};
-	string moves = read_moves();
-	root = scramble(root, moves);
-	print(root);
-	A_star(root);
-	// sleep(5);
-	// ids(root);
-	// bfs(root);
-	// dfs(root, 0, 3);
-	// for (auto s: visited) {
-	// 	cout << s << ' ';
-	// }
-	//set<string> s;
-	// generate_all_states(root);
-	// for (auto x: actions) {
-	// 	auto n1 = x.second(root);
-	// 	for (auto y: actions) {
-	// 		auto n2 = y.second(n1);
-	// 		for (auto z: actions) {
-	// 			auto n3 = z.second(n2);
-	// 			cout << heuristic(n3) << '\t' << n2.state << endl;
-	// 		}
-	// 	}
-	// }
-	return 0;
-}
+#endif /* end of include guard: SEARCH_HPP */
