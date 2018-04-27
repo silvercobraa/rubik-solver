@@ -15,11 +15,12 @@
 using namespace std;
 
 
-bool dfs(set<string>& visited, Node* node, int depth, int max_depth) {
+static bool dfs(set<string>& visited, Node* node, int depth, int max_depth) {
 	if (depth > max_depth) {
 		return false;
 	}
 	if (goal_test(node)) {
+		cout << "REACHED GOAL STATE" << endl;
 		solution(node);
 		return true;
 	}
@@ -34,9 +35,9 @@ bool dfs(set<string>& visited, Node* node, int depth, int max_depth) {
 }
 
 
-bool dfs(Node* node, int depth, int max_depth) {
+bool dfs(Node* root, int depth, int max_depth) {
 	set<string> visited;
-	return dfs(visited, node, depth, max_depth);
+	return dfs(visited, root, depth, max_depth);
 }
 
 /*
@@ -58,37 +59,29 @@ void print_trace(map<string, string>& parent, map<string, string>& move, string 
 	cout << endl;
 }
 
-
-bool bfs(Node& node) {
-	queue<Node> q;
-	set<string> v; // los estados visitados
-	map<string, string> move; // el movimiento con el cual se llego a este estado
-	map<string, string> parent_state; // el estado anterior
-
-	q.push(node);
-	parent_state[node.state] = "";
-	move[node.state] = "";
+*/
+bool bfs(Node* root) {
+	queue<Node*> q;
+	set<string> v;
+	q.push(root);
 
 	while(!q.empty()) {
 		cout << v.size() << endl;
-		Node parent = q.front();
+		Node* parent = q.front();
 		q.pop();
-		v.insert(parent.state);
+		// si el estado del nodo actual ya fue visitado, lo ignoramos
+		if (v.find(parent->state) != v.end()) {
+			continue;
+		}
+		v.insert(parent->state);
 		if (goal_test(parent)) {
 			cout << "REACHED GOAL STATE" << endl;
-			print_trace(parent_state, move, parent.state);
+			solution(parent);
 			return true;
 		}
 		for (int act = 0; act < actions.size(); act++) {
-			// auto child = actions[i](parent);
-			auto child = child_node(parent, act);
-			if (v.find(child.state) == v.end()) {
-				move[child.state] = action_name[act];
-				// cout << child.state << " -> " << act.first << endl;
-				parent_state[child.state] = parent.state;
-				// print(parent);
-				// cout << act.first << endl;
-				// print(child);
+			Node* child = child_node(parent, act);
+			if (v.find(child->state) == v.end()) {
 				q.push(child);
 			}
 		}
@@ -96,7 +89,7 @@ bool bfs(Node& node) {
 	cout << "DIDN'T REACH GOAL STATE" << endl;
 	return false;
 }
-
+/*
 bool A_star(Node& node) {
 	set<pair<double,Node>> q;
 	set<string> v; // los estados visitados
