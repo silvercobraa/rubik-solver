@@ -28,7 +28,7 @@ int main(int argc, char const *argv[]) {
 	string moves = read_moves();
 	scramble(root, moves);
 	print(*root);
-	dfs(root, 0, 4);
+	ids(root);
 
 	Node* child = child_node(root, 0);
 	printf("%p %p %p\n", root, child, child->parent);

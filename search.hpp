@@ -142,17 +142,18 @@ bool A_star(Node& node) {
 	cout << "DIDN'T REACH GOAL STATE" << endl;
 	return false;
 }
-
+*/
 // iterative deepening search
-void ids(Node& root) {
+void ids(Node* root) {
 	int max_depth = 1;
-	bool goal_state = false;
-	while (!goal_state) {
-		goal_state = dfs(root, 0, max_depth);
+	bool reached_goal_state = false;
+	while (!reached_goal_state) {
+		reached_goal_state = dfs(root, 0, max_depth);
 		max_depth += 1;
 	}
 }
 
+/*
 void generate_all_states(Node& n) {
 	set<string> s;
 	queue<Node> q;
