@@ -35,10 +35,11 @@ bool dfs(set<string>& visited, vector<string>& path, Node& node, int depth, int 
 	// visited.insert(node.state);
 	cout << depth << ' ' << visited.size() <<  endl;
 
-	for (int i = 0; i < actions.size(); i++) {
-		Node child_node = actions[i](node);
-		path.push_back(action_name[i]);
-		if (dfs(visited, path, child_node, depth + 1, max_depth)) {
+	for (int act = 0; act < actions.size(); act++) {
+		// Node child_node = actions[i](node);
+		Node child = child_node(node, act);
+		path.push_back(action_name[act]);
+		if (dfs(visited, path, child, depth + 1, max_depth)) {
 			return true;
 		}
 		path.pop_back();
@@ -93,10 +94,11 @@ bool bfs(Node& node) {
 			print_trace(parent_state, move, parent.state);
 			return true;
 		}
-		for (int i = 0; i < actions.size(); i++) {
-			auto child = actions[i](parent);
+		for (int act = 0; act < actions.size(); act++) {
+			// auto child = actions[i](parent);
+			auto child = child_node(parent, act);
 			if (v.find(child.state) == v.end()) {
-				move[child.state] = action_name[i];
+				move[child.state] = action_name[act];
 				// cout << child.state << " -> " << act.first << endl;
 				parent_state[child.state] = parent.state;
 				// print(parent);
@@ -135,10 +137,11 @@ bool A_star(Node& node) {
 		// if (v.find(parent.state) != v.end()) {
 		// 	continue;
 		// }
-		for (int i = 0; i < actions.size(); i++) {
-			auto child = actions[i](parent);
+		for (int act = 0; act < actions.size(); act++) {
+			// auto child = actions[i](parent);
+			auto child = child_node(parent, act);
 			if (v.find(child.state) == v.end()) {
-				move[child.state] = action_name[i];
+				move[child.state] = action_name[act];
 				// cout << child.state << " -> " << act.first << endl;
 				parent_state[child.state] = parent.state;
 				// print(parent);
@@ -171,7 +174,8 @@ Node scramble(Node root, string moves) {
 	string move;
 	while (ss >> move) {
 		cout << move << endl;
-		root = action_by_name[move](root);
+		// root = action_by_name[move](root);
+		root.state = action_by_name[move](root.state);
 		cout << root.state << endl;
 	}
 	root.cost = 0;
@@ -187,8 +191,8 @@ void generate_all_states(Node& n) {
 		q.pop();
 		s.insert(parent.state);
 		cout << s.size() << endl;
-		for (auto act: actions) {
-			auto child = act(parent);
+		for (int act = 0; act < actions.size(); act++) {
+			Node child = child_node(parent, act);
 			if (s.find(child.state) == s.end()) {
 				q.push(child);
 			}

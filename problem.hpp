@@ -64,175 +64,177 @@ static void swap4(std::string& state, int p0, int p1, int p2, int p3) {
 }
 
 // rotaciones sobre el eje x
-static Node x_rotation(Node& node, int c0, int c1, int c2, int c3)
+static std::string x_rotation(std::string& state, int c0, int c1, int c2, int c3)
 {
-	std::string aux = node.state;
-	swap4(aux, c0*CORNER + Z, c1*CORNER + Y, c2*CORNER + Z, c3*CORNER + Y);
-	swap4(aux, c0*CORNER + X, c1*CORNER + X, c2*CORNER + X, c3*CORNER + X);
-	swap4(aux, c0*CORNER + Y, c1*CORNER + Z, c2*CORNER + Y, c3*CORNER + Z);
-	return {aux, &node, node.cost + 1};
+	std::string new_state = state;
+	swap4(new_state, c0*CORNER + Z, c1*CORNER + Y, c2*CORNER + Z, c3*CORNER + Y);
+	swap4(new_state, c0*CORNER + X, c1*CORNER + X, c2*CORNER + X, c3*CORNER + X);
+	swap4(new_state, c0*CORNER + Y, c1*CORNER + Z, c2*CORNER + Y, c3*CORNER + Z);
+	return new_state;
 }
 
 // rotaciones sobre el eje y
-static Node y_rotation(Node& node, int c0, int c1, int c2, int c3)
+static std::string y_rotation(std::string& state, int c0, int c1, int c2, int c3)
 {
-	std::string aux = node.state;
-	swap4(aux, c0*CORNER + X, c1*CORNER + Z, c2*CORNER + X, c3*CORNER + Z);
-	swap4(aux, c0*CORNER + Y, c1*CORNER + Y, c2*CORNER + Y, c3*CORNER + Y);
-	swap4(aux, c0*CORNER + Z, c1*CORNER + X, c2*CORNER + Z, c3*CORNER + X);
-	return {aux, &node, node.cost + 1};
+	std::string new_state = state;
+	swap4(new_state, c0*CORNER + X, c1*CORNER + Z, c2*CORNER + X, c3*CORNER + Z);
+	swap4(new_state, c0*CORNER + Y, c1*CORNER + Y, c2*CORNER + Y, c3*CORNER + Y);
+	swap4(new_state, c0*CORNER + Z, c1*CORNER + X, c2*CORNER + Z, c3*CORNER + X);
+	return new_state;
 }
 
 // rotaciones sobre el eje z
-static Node z_rotation(Node& node, int c0, int c1, int c2, int c3)
+static std::string z_rotation(std::string& state, int c0, int c1, int c2, int c3)
 {
-	std::string aux = node.state;
-	swap4(aux, c0*CORNER + X, c1*CORNER + Y, c2*CORNER + X, c3*CORNER + Y);
-	swap4(aux, c0*CORNER + Z, c1*CORNER + Z, c2*CORNER + Z, c3*CORNER + Z);
-	swap4(aux, c0*CORNER + Y, c1*CORNER + X, c2*CORNER + Y, c3*CORNER + X);
-	return {aux, &node, node.cost + 1};
+	std::string new_state = state;
+	swap4(new_state, c0*CORNER + X, c1*CORNER + Y, c2*CORNER + X, c3*CORNER + Y);
+	swap4(new_state, c0*CORNER + Z, c1*CORNER + Z, c2*CORNER + Z, c3*CORNER + Z);
+	swap4(new_state, c0*CORNER + Y, c1*CORNER + X, c2*CORNER + Y, c3*CORNER + X);
+	return new_state;
 }
 
 // ROTACIONES DE CARAS EN 90 GRADOS
 
-Node R(Node& node) {
-	return x_rotation(node, 0, 1, 3, 2);
+std::string R(std::string& state) {
+	return x_rotation(state, 0, 1, 3, 2);
 }
 
 // R'
-Node R_(Node& node) {
-	return x_rotation(node, 2, 3, 1, 0);
+std::string R_(std::string& state) {
+	return x_rotation(state, 2, 3, 1, 0);
 }
 
-Node L(Node& node) {
-	return x_rotation(node, 4, 6, 7, 5);
+std::string L(std::string& state) {
+	return x_rotation(state, 4, 6, 7, 5);
 }
 
 // L'
-Node L_(Node& node) {
-	return x_rotation(node, 5, 7, 6, 4);
+std::string L_(std::string& state) {
+	return x_rotation(state, 5, 7, 6, 4);
 }
 
-Node U(Node& node) {
-	return y_rotation(node, 0, 4, 5, 1);
-}
-
-// U'
-Node U_(Node& node) {
-	return y_rotation(node, 1, 5, 4, 0);
-}
-
-Node D(Node& node) {
-	return y_rotation(node, 2, 3, 7, 6);
+std::string U(std::string& state) {
+	return y_rotation(state, 0, 4, 5, 1);
 }
 
 // U'
-Node D_(Node& node) {
-	return y_rotation(node, 6, 7, 3, 2);
+std::string U_(std::string& state) {
+	return y_rotation(state, 1, 5, 4, 0);
+}
+
+std::string D(std::string& state) {
+	return y_rotation(state, 2, 3, 7, 6);
+}
+
+// U'
+std::string D_(std::string& state) {
+	return y_rotation(state, 6, 7, 3, 2);
 }
 
 
-Node F(Node& node) {
-	return z_rotation(node, 0, 2, 6, 4);
+std::string F(std::string& state) {
+	return z_rotation(state, 0, 2, 6, 4);
 }
 
 // F'
-Node F_(Node& node) {
-	return z_rotation(node, 4, 6, 2, 0);
+std::string F_(std::string& state) {
+	return z_rotation(state, 4, 6, 2, 0);
 }
 
-Node B(Node& node) {
-	return z_rotation(node, 1, 5, 7, 3);
+std::string B(std::string& state) {
+	return z_rotation(state, 1, 5, 7, 3);
 }
 
 // B'
-Node B_(Node& node) {
-	return z_rotation(node, 3, 7, 5, 1);
+std::string B_(std::string& state) {
+	return z_rotation(state, 3, 7, 5, 1);
 }
 
 // ROTACIONES DE CUBO COMPETO
 
-Node x(Node& node) {
-	std::string aux = node.state;
+std::string x(std::string& state) {
+	std::string new_state = state;
 	// resto equivale a R
-	swap4(aux, 0*CORNER + Z, 1*CORNER + Y, 3*CORNER + Z, 2*CORNER + Y);
-	swap4(aux, 0*CORNER + X, 1*CORNER + X, 3*CORNER + X, 2*CORNER + X);
-	swap4(aux, 0*CORNER + Y, 1*CORNER + Z, 3*CORNER + Y, 2*CORNER + Z);
+	swap4(new_state, 0*CORNER + Z, 1*CORNER + Y, 3*CORNER + Z, 2*CORNER + Y);
+	swap4(new_state, 0*CORNER + X, 1*CORNER + X, 3*CORNER + X, 2*CORNER + X);
+	swap4(new_state, 0*CORNER + Y, 1*CORNER + Z, 3*CORNER + Y, 2*CORNER + Z);
 	// esto equivale a L'
-	swap4(aux, 4*CORNER + Z, 5*CORNER + Y, 7*CORNER + Z, 6*CORNER + Y);
-	swap4(aux, 4*CORNER + X, 5*CORNER + X, 7*CORNER + X, 6*CORNER + X);
-	swap4(aux, 4*CORNER + Y, 5*CORNER + Z, 7*CORNER + Y, 6*CORNER + Z);
-	return {aux, &node, node.cost + 2};
+	swap4(new_state, 4*CORNER + Z, 5*CORNER + Y, 7*CORNER + Z, 6*CORNER + Y);
+	swap4(new_state, 4*CORNER + X, 5*CORNER + X, 7*CORNER + X, 6*CORNER + X);
+	swap4(new_state, 4*CORNER + Y, 5*CORNER + Z, 7*CORNER + Y, 6*CORNER + Z);
+	return new_state;
 }
 
-Node x_(Node& node) {
-	std::string aux = node.state;
+std::string x_(std::string& state) {
+	std::string new_state = state;
 	// esto equivale a R'
-	swap4(aux, 2*CORNER + Z, 3*CORNER + Y, 1*CORNER + Z, 0*CORNER + Y);
-	swap4(aux, 2*CORNER + X, 3*CORNER + X, 1*CORNER + X, 0*CORNER + X);
-	swap4(aux, 2*CORNER + Y, 3*CORNER + Z, 1*CORNER + Y, 0*CORNER + Z);
+	swap4(new_state, 2*CORNER + Z, 3*CORNER + Y, 1*CORNER + Z, 0*CORNER + Y);
+	swap4(new_state, 2*CORNER + X, 3*CORNER + X, 1*CORNER + X, 0*CORNER + X);
+	swap4(new_state, 2*CORNER + Y, 3*CORNER + Z, 1*CORNER + Y, 0*CORNER + Z);
 	// esto equivale a L
-	swap4(aux, 6*CORNER + Z, 7*CORNER + Y, 5*CORNER + Z, 4*CORNER + Y);
-	swap4(aux, 6*CORNER + X, 7*CORNER + X, 5*CORNER + X, 4*CORNER + X);
-	swap4(aux, 6*CORNER + Y, 7*CORNER + Z, 5*CORNER + Y, 4*CORNER + Z);
-	return {aux, &node, node.cost + 2};
+	swap4(new_state, 6*CORNER + Z, 7*CORNER + Y, 5*CORNER + Z, 4*CORNER + Y);
+	swap4(new_state, 6*CORNER + X, 7*CORNER + X, 5*CORNER + X, 4*CORNER + X);
+	swap4(new_state, 6*CORNER + Y, 7*CORNER + Z, 5*CORNER + Y, 4*CORNER + Z);
+	return new_state;
 }
 
-Node y(Node& node)
+std::string y(std::string& state)
 {
-	std::string aux = node.state;
+	std::string new_state = state;
 	// esto equivale a U
-	swap4(aux, 0*CORNER + X, 4*CORNER + Z, 5*CORNER + X, 1*CORNER + Z);
-	swap4(aux, 0*CORNER + Y, 4*CORNER + Y, 5*CORNER + Y, 1*CORNER + Y);
-	swap4(aux, 0*CORNER + Z, 4*CORNER + X, 5*CORNER + Z, 1*CORNER + X);
+	swap4(new_state, 0*CORNER + X, 4*CORNER + Z, 5*CORNER + X, 1*CORNER + Z);
+	swap4(new_state, 0*CORNER + Y, 4*CORNER + Y, 5*CORNER + Y, 1*CORNER + Y);
+	swap4(new_state, 0*CORNER + Z, 4*CORNER + X, 5*CORNER + Z, 1*CORNER + X);
 	// esto equivale a D'
-	swap4(aux, 2*CORNER + X, 6*CORNER + Z, 7*CORNER + X, 3*CORNER + Z);
-	swap4(aux, 2*CORNER + Y, 6*CORNER + Y, 7*CORNER + Y, 3*CORNER + Y);
-	swap4(aux, 2*CORNER + Z, 6*CORNER + X, 7*CORNER + Z, 3*CORNER + X);
-	return {aux, &node, node.cost + 2};
+	swap4(new_state, 2*CORNER + X, 6*CORNER + Z, 7*CORNER + X, 3*CORNER + Z);
+	swap4(new_state, 2*CORNER + Y, 6*CORNER + Y, 7*CORNER + Y, 3*CORNER + Y);
+	swap4(new_state, 2*CORNER + Z, 6*CORNER + X, 7*CORNER + Z, 3*CORNER + X);
+	return new_state;
 }
 
-Node y_(Node& node)
+std::string y_(std::string& state)
 {
-	std::string aux = node.state;
+	std::string new_state = state;
 	// esto equivale a U'
-	swap4(aux, 1*CORNER + X, 5*CORNER + Z, 4*CORNER + X, 0*CORNER + Z);
-	swap4(aux, 1*CORNER + Y, 5*CORNER + Y, 4*CORNER + Y, 0*CORNER + Y);
-	swap4(aux, 1*CORNER + Z, 5*CORNER + X, 4*CORNER + Z, 0*CORNER + X);
+	swap4(new_state, 1*CORNER + X, 5*CORNER + Z, 4*CORNER + X, 0*CORNER + Z);
+	swap4(new_state, 1*CORNER + Y, 5*CORNER + Y, 4*CORNER + Y, 0*CORNER + Y);
+	swap4(new_state, 1*CORNER + Z, 5*CORNER + X, 4*CORNER + Z, 0*CORNER + X);
 	// esto equivale a D
-	swap4(aux, 3*CORNER + X, 7*CORNER + Z, 6*CORNER + X, 2*CORNER + Z);
-	swap4(aux, 3*CORNER + Y, 7*CORNER + Y, 6*CORNER + Y, 2*CORNER + Y);
-	swap4(aux, 3*CORNER + Z, 7*CORNER + X, 6*CORNER + Z, 2*CORNER + X);
-	return {aux, &node, node.cost + 2};
+	swap4(new_state, 3*CORNER + X, 7*CORNER + Z, 6*CORNER + X, 2*CORNER + Z);
+	swap4(new_state, 3*CORNER + Y, 7*CORNER + Y, 6*CORNER + Y, 2*CORNER + Y);
+	swap4(new_state, 3*CORNER + Z, 7*CORNER + X, 6*CORNER + Z, 2*CORNER + X);
+	return new_state;
 }
 
-Node z(Node& node)
+std::string z(std::string& state)
 {
-	std::string aux = node.state;
+	std::string new_state = state;
 	// este movimiento equivale a F
-	swap4(aux, 0*CORNER + X, 2*CORNER + Y, 6*CORNER + X, 4*CORNER + Y);
-	swap4(aux, 0*CORNER + Z, 2*CORNER + Z, 6*CORNER + Z, 4*CORNER + Z);
-	swap4(aux, 0*CORNER + Y, 2*CORNER + X, 6*CORNER + Y, 4*CORNER + X);
+	swap4(new_state, 0*CORNER + X, 2*CORNER + Y, 6*CORNER + X, 4*CORNER + Y);
+	swap4(new_state, 0*CORNER + Z, 2*CORNER + Z, 6*CORNER + Z, 4*CORNER + Z);
+	swap4(new_state, 0*CORNER + Y, 2*CORNER + X, 6*CORNER + Y, 4*CORNER + X);
 	// este movimiento equivale a B'
-	swap4(aux, 1*CORNER + X, 3*CORNER + Y, 7*CORNER + X, 5*CORNER + Y);
-	swap4(aux, 1*CORNER + Z, 3*CORNER + Z, 7*CORNER + Z, 5*CORNER + Z);
-	swap4(aux, 1*CORNER + Y, 3*CORNER + X, 7*CORNER + Y, 5*CORNER + X);
-	return {aux, &node, node.cost + 2};
+	swap4(new_state, 1*CORNER + X, 3*CORNER + Y, 7*CORNER + X, 5*CORNER + Y);
+	swap4(new_state, 1*CORNER + Z, 3*CORNER + Z, 7*CORNER + Z, 5*CORNER + Z);
+	swap4(new_state, 1*CORNER + Y, 3*CORNER + X, 7*CORNER + Y, 5*CORNER + X);
+	return new_state;
 }
 
-Node z_(Node& node)
+std::string z_(std::string& state)
 {
-	std::string aux = node.state;
+	std::string new_state = state;
 	// este movimiento equivale a F'
-	swap4(aux, 4*CORNER + X, 6*CORNER + Y, 2*CORNER + X, 0*CORNER + Y);
-	swap4(aux, 4*CORNER + Z, 6*CORNER + Z, 2*CORNER + Z, 0*CORNER + Z);
-	swap4(aux, 4*CORNER + Y, 6*CORNER + X, 2*CORNER + Y, 0*CORNER + X);
+	swap4(new_state, 4*CORNER + X, 6*CORNER + Y, 2*CORNER + X, 0*CORNER + Y);
+	swap4(new_state, 4*CORNER + Z, 6*CORNER + Z, 2*CORNER + Z, 0*CORNER + Z);
+	swap4(new_state, 4*CORNER + Y, 6*CORNER + X, 2*CORNER + Y, 0*CORNER + X);
 	// este movimiento equivale a B
-	swap4(aux, 5*CORNER + X, 7*CORNER + Y, 3*CORNER + X, 1*CORNER + Y);
-	swap4(aux, 5*CORNER + Z, 7*CORNER + Z, 3*CORNER + Z, 1*CORNER + Z);
-	swap4(aux, 5*CORNER + Y, 7*CORNER + X, 3*CORNER + Y, 1*CORNER + X);
-	return {aux, &node, node.cost + 2};
+	swap4(new_state, 5*CORNER + X, 7*CORNER + Y, 3*CORNER + X, 1*CORNER + Y);
+	swap4(new_state, 5*CORNER + Z, 7*CORNER + Z, 3*CORNER + Z, 1*CORNER + Z);
+	swap4(new_state, 5*CORNER + Y, 7*CORNER + X, 3*CORNER + Y, 1*CORNER + X);
+	return new_state;
 }
+
+
 
 static std::string solved_state = "bry""brw""boy""bow""gry""grw""goy""gow";
 
@@ -269,7 +271,7 @@ bool goal_test(Node& node) {
 
 }
 
-typedef Node (*Action)(Node&);
+typedef std::string (*Action)(std::string&);
 
 std::vector<std::string> action_name = {
 	"F", "F'", "B", "B'",
@@ -289,6 +291,15 @@ std::vector<Action> actions = {
 	//z, z_,
 };
 
+std::vector<int> action_cost = {
+	1, 1, 1, 1,
+	1, 1, 1, 1,
+	1, 1, 1, 1,
+	//2, 2,
+	//2, 2,
+	//2, 2,
+};
+
 std::map<std::string, Action> action_by_name = {
 	{"F", F}, {"F'", F_}, {"B", B}, {"B'", B_},
 	{"R", R}, {"R'", R_}, {"L", L}, {"L'", L_},
@@ -297,6 +308,15 @@ std::map<std::string, Action> action_by_name = {
 	//{"y", y}, {"y'", y_},
 	//{"z", z}, {"z'", z_},
 };
+
+Node child_node(Node& parent, int action_id) {
+	Node child;
+	child.state = actions[action_id](parent.state);
+	child.action = action_id;
+	child.parent = NULL;
+	child.cost = parent.cost + action_cost[action_id];
+	return child;
+}
 
 void print(Node& node) {
 	std::cout << "   +--+" << '\n';
