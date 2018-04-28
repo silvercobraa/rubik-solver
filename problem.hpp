@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <stack>
 
 #define CORNER 3
 #define NO_ACTION -1
@@ -324,9 +325,15 @@ Node* child_node(Node* parent, int action_id) {
 
 
 void solution(Node* node) {
+	std::stack<int> stk;
 	while (node->action != NO_ACTION) {
-		std::cout << action_name[node->action] << ' ';
+		// std::cout << action_name[node->action] << ' ';
+		stk.push(node->action);
 		node = node->parent;
+	}
+	while (!stk.empty()) {
+		std::cout << action_name[stk.top()];
+		stk.pop();
 	}
 	std::cout << std::endl;
 }
