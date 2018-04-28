@@ -28,26 +28,7 @@ int main(int argc, char const *argv[]) {
 	string moves = read_moves();
 	scramble(root, moves);
 	print(*root);
-	ids(root);
-
-	Node* child = child_node(root, 0);
-	printf("%p %p %p\n", root, child, child->parent);
-	// ids(root);
-	// bfs(root);
-	// for (auto s: visited) {
-	// 	cout << s << ' ';
-	// }
-	//set<string> s;
+	bfs(root);
 	// generate_all_states(root);
-	// for (auto x: actions) {
-	// 	auto n1 = x.second(root);
-	// 	for (auto y: actions) {
-	// 		auto n2 = y.second(n1);
-	// 		for (auto z: actions) {
-	// 			auto n3 = z.second(n2);
-	// 			cout << heuristic(n3) << '\t' << n2.state << endl;
-	// 		}
-	// 	}
-	// }
 	return 0;
 }

@@ -117,24 +117,36 @@ void ids(Node* root) {
 	}
 }
 
-/*
-void generate_all_states(Node& n) {
+
+// Se puede almacenar el arbol completo BFS en memoria, pero los caminos no.
+// Sin embargo, podemos usar el disco...
+void generate_all_states(Node* root) {
 	set<string> s;
-	queue<Node> q;
-	q.push(n);
+	queue<Node*> q;
+	q.push(root);
 	while (!q.empty()) {
 		auto parent = q.front();
 		q.pop();
-		s.insert(parent.state);
-		cout << s.size() << endl;
+		if (visited(s, parent)) {
+			continue;
+		}
+		if (s.size() % 1000 == 0) {
+			cerr << s.size() << endl;
+		}
+		s.insert(parent->state);
+		// cout << s.size() << endl;
+		cout << parent->state << ' ';
+		solution(parent);
 		for (int act = 0; act < actions.size(); act++) {
-			Node child = child_node(parent, act);
-			if (s.find(child.state) == s.end()) {
+			Node* child = child_node(parent, act);
+			// if (!visited(s, child)) {
 				q.push(child);
-			}
+			// }
 		}
 	}
+	cout << s.size() << endl;
 }
-*/
+
+
 
 #endif /* end of include guard: SEARCH_HPP */
