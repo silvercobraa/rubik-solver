@@ -293,6 +293,17 @@ std::vector<Action> actions = {
 	//z, z_,
 };
 
+// este vector contiene el indece de la acción inversa de la acción i.
+// por ejemplo, la acción F (posicion 0) tiene como inversa la acción F' (posición 1)
+std::vector<int> reverse_action = {
+	1, 0, 3, 2,
+	5, 4, 7, 6,
+	9, 8, 11, 10,
+	//13, 12,
+	//15, 14,
+	//17, 16,
+};
+
 // las rotaciones de 90 grados de una cara tienen costo 1, mientras que las
 // rotaciones en 90 grados del cubo completo tienen costo 2 (pues equivale a girar
 // 90 grados 2 caras opuestas)
