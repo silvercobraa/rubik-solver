@@ -261,6 +261,30 @@ double heuristic(Node* node) {
 	return sum / 4.0;
 }
 
+// esta matriz me dice por cada pieza y por cada posición a que distancia
+// (de manhattan) esta de su posición correcta
+static std::map<std::string, std::vector<int>> manhattan_distance = {
+	{"bry", {0, 1, 1, 2, 1, 2, 2, 3}},
+	{"brw", {1, 0, 2, 1, 2, 1, 3, 2}},
+	{"boy", {1, 2, 0, 1, 2, 3, 1, 2}},
+	{"bow", {2, 1, 1, 0, 3, 2, 2, 1}},
+	{"gry", {1, 2, 2, 3, 0, 1, 1, 2}},
+	{"grw", {2, 1, 3, 2, 1, 0, 2, 1}},
+	{"goy", {2, 3, 1, 2, 1, 2, 0, 1}},
+	{"gow", {3, 2, 2, 1, 2, 1, 1, 0}},
+};
+
+// esta heurística usa la distancia de manhattan de todas las piezas dividida por 4
+double heuristic2(Node* node) {
+	int sum = 0;
+	for (int i = 0; i < node->state.size(); i += 3) {
+		std::string sub = node->state.substr(i, 3);
+		std::sort(sub.begin(), sub.end());
+		sum += manhattan_distance[sub][i/3];
+	}
+	return sum / 4.0;
+}
+
 // el cubo se considera cuando se tienen los siguientes colores:
 //     azul en la cara frontal
 //     verde en la cara trasera
