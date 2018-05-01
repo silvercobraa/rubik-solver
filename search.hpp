@@ -16,18 +16,21 @@
 using namespace std;
 
 
-static bool dfs(set<string>& visited, Node* node, int depth, int max_depth) {
+static bool dfs(set<string>& visited, Node* parent, int depth, int max_depth) {
 	if (depth > max_depth) {
 		return false;
 	}
-	if (goal_test(node)) {
+	if (goal_test(parent)) {
 		cout << "REACHED GOAL STATE" << endl;
-		solution(node);
+		solution(parent);
 		return true;
 	}
 	cout << depth << ' ' << visited.size() <<  endl;
 	for (int act = 0; act < actions.size(); act++) {
-		Node* child = child_node(node, act);
+		if (act == reverse_action[parent->action]) {
+			continue;
+		}
+		Node* child = child_node(parent, act);
 		if (dfs(visited, child, depth + 1, max_depth)) {
 			return true;
 		}
@@ -62,6 +65,9 @@ bool bfs(Node* root) {
 			return true;
 		}
 		for (int act = 0; act < actions.size(); act++) {
+			// if (act == reverse_action[parent->action]) {
+			// 	continue;
+			// }
 			Node* child = child_node(parent, act);
 			if (v.find(child->state) == v.end()) {
 				q.push(child);
@@ -94,10 +100,13 @@ bool A_star(Node* root) {
 		// 	continue;
 		// }
 		for (int act = 0; act < actions.size(); act++) {
+			if (act == reverse_action[parent->action]) {
+				continue;
+			}
 			Node* child = child_node(parent, act);
 			if (v.find(child->state) == v.end()) {
 				// DECOMENTAR ACA PARA BÚSQUEDA GREEDY
-				// q.insert({heuristic(child), child});
+				// q.insert({heuristic2(child), child});
 				// DESCOMENTAR ACA PARA BÚSCQUEDA A*
 				q.insert({child->cost + heuristic(child), child});
 			}
@@ -161,7 +170,7 @@ static bool visited(set<string>& s, Node* n)
 
 // Se puede almacenar el arbol completo BFS en memoria, pero los caminos no.
 // Sin embargo, podemos usar el disco...
-void generate_all_states(Node* root) {
+void generate_pattern_database(Node* root) {
 	set<string> s;
 	queue<Node*> q;
 	q.push(root);
@@ -171,6 +180,7 @@ void generate_all_states(Node* root) {
 		if (visited(s, parent)) {
 			continue;
 		}
+		// para cachar mas o menos como va imprimo cada 1000 nodos visitados
 		if (s.size() % 1000 == 0) {
 			cerr << s.size() << endl;
 		}
@@ -188,29 +198,29 @@ void generate_all_states(Node* root) {
 			// }
 		}
 	}
-	cout << s.size() << endl;
 }
 
+static bool PATTERN_DATABASE_LOADED = false;
+static std::map<std::string,std::string> pattern_database;
 
-void load_pattern_database(std::string pattern_database_file, std::map<std::string,std::string>& pd) {
+void load_pattern_database(std::string pattern_database_file) {
 	string s;
 	std::ifstream file(pattern_database_file);
 	file >> s;
-	pd[s] = "ALREADY SOLVED";
+	pattern_database[s] = "ALREADY SOLVED";
 	std::string state, moves;
 	while (file >> state >> moves) {
-		pd[state] = moves;
-		// cout << pd.size() << endl;
+		pattern_database[state] = moves;
+		// cout << pattern_database.size() << endl;
 	}
+	PATTERN_DATABASE_LOADED = true;
 }
 
 
 void pattern_database_search(std::string pattern_database_file, Node* node) {
-	static bool pattern_database_loaded = false;
-	static std::map<std::string,std::string> pattern_database;
-	if (!pattern_database_loaded) {
-		load_pattern_database(pattern_database_file, pattern_database);
-		pattern_database_loaded = true;
+
+	if (!PATTERN_DATABASE_LOADED) {
+		load_pattern_database(pattern_database_file);
 	}
 	string n = node->state;
 	string n1 = z(n);
