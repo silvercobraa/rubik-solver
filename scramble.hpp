@@ -8,7 +8,6 @@
 #include <queue>
 #include <string>
 #include <algorithm>
-#include <random>
 
 void scramble(Node* root, std::string moves) {
 	auto ss = std::stringstream(moves);
@@ -19,10 +18,15 @@ void scramble(Node* root, std::string moves) {
 	return;
 }
 
-Node random_scramble(Node root, int moves) {
-	// TODO: implementar esta wea
-	Node scrambled;
-	return scrambled;
+void random_scramble(Node* root, int moves) {
+	srand(time(0));
+	for (int i = 0; i < moves; i++) {
+		int r = rand() % actions.size();
+		cout << action_name[r] << ' ';
+		root->state = actions[r](root->state);
+	}
+	cout << endl;
+	return;
 }
 
 #endif /* end of include guard: SCRAMBLE_HPP */
