@@ -18,17 +18,45 @@ string read_moves() {
 	return moves;
 }
 
-int main(int argc, char const *argv[]) {
+Node* make_root() {
 	Node* root = new Node();
 	root->state = solved_state;
 	root->parent = NULL;
 	root->cost = 0;
 	root->action = NO_ACTION;
+	return root;
+}
 
-	string moves = read_moves();
-	scramble(root, moves);
-	print(*root);
-	bfs(root);
-	// generate_all_states(root);
+Heuristic h = heuristic2;
+
+int main(int argc, char const *argv[]) {
+	if (argc < 2) {
+		cout << "Ingresar algoritmo de busqueda" << endl;
+		exit(EXIT_FAILURE);
+	}
+	Node* root = make_root();
+	// scramble(root, read_moves());
+	random_scramble(root, 5);
+	string argument(argv[1]);
+	if (argument == "bfs") {
+		bfs(root);
+	}
+	else if (argument == "ids") {
+		ids(root);
+	}
+	else if (argument == "astar") {
+		a_star(root, h);
+	}
+	else if (argument == "greedy") {
+		greedy(root, h);
+	}
+	else if (argument == "pd") {
+		load_pattern_database("pattern_database.txt");
+		cout << "Pattern database loaded" << endl;
+		pattern_database_search("pattern_database.txt", root);
+	}
+	else {
+		cout << "what" << endl;
+	}
 	return 0;
 }
