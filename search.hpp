@@ -79,41 +79,54 @@ bool bfs(Node* root) {
 }
 
 
-bool A_star(Node* root) {
-	set<pair<double,Node*>> q;
-	set<string> v; // los estados visitados
+// búsqueda generica. root es el nodo raiz y f es la función de evaluación
+template <typename Lambda>
+bool search(Node* root, Lambda f) {
+	set<pair<double,Node*>> frontier;
+	set<string> visited; // los estados visitados
 
-	q.insert({0, root});
+	frontier.insert({0, root});
 
-	while(!q.empty()) {
-		cout << v.size() << endl;
-		// cout << q.size() << endl;
-		Node* parent = (*q.begin()).second;
-		q.erase(q.begin());
-		v.insert(parent->state);
+	while(!frontier.empty()) {
+		cout << visited.size() << endl;
+		// cout << frontier.size() << endl;
+		Node* parent = (*frontier.begin()).second;
+		frontier.erase(frontier.begin());
+		// if (visited.find(parent->state) != visited.end()) {
+		// 	continue;
+		// }
+		visited.insert(parent->state);
 		if (goal_test(parent)) {
 			cout << "REACHED GOAL STATE" << endl;
 			solution(parent);
 			return true;
 		}
-		// if (v.find(parent.state) != v.end()) {
-		// 	continue;
-		// }
 		for (int act = 0; act < actions.size(); act++) {
 			if (act == reverse_action[parent->action]) {
 				continue;
 			}
 			Node* child = child_node(parent, act);
-			if (v.find(child->state) == v.end()) {
-				// DECOMENTAR ACA PARA BÚSQUEDA GREEDY
-				// q.insert({heuristic2(child), child});
-				// DESCOMENTAR ACA PARA BÚSCQUEDA A*
-				q.insert({child->cost + heuristic(child), child});
+			if (visited.find(child->state) == visited.end()) {
+				frontier.insert({f(child), child});
 			}
 		}
 	}
 	cout << "DIDN'T REACH GOAL STATE" << endl;
 	return false;
+}
+
+
+typedef double (*Heuristic)(Node*);
+
+bool greedy(Node* root, Heuristic h) {
+	auto lambda = [&](Node* n){return h(n);};
+	return search(root, lambda);
+}
+
+
+bool a_star(Node* root, Heuristic h) {
+	auto lambda = [&](Node* n){return n->cost + h(n);};
+	return search(root, lambda);
 }
 
 
