@@ -66,9 +66,9 @@ bool bfs(Node* root) {
 			return true;
 		}
 		for (int act = 0; act < actions.size(); act++) {
-			// if (act == reverse_action[parent->action]) {
-			// 	continue;
-			// }
+			if (act == reverse_action[parent->action]) {
+				continue;
+			}
 			Node* child = child_node(parent, act);
 			if (v.find(child->state) == v.end()) {
 				q.push(child);
@@ -82,7 +82,7 @@ bool bfs(Node* root) {
 
 // búsqueda generica. root es el nodo raiz y f es la función de evaluación
 template <typename Lambda>
-bool search(Node* root, Lambda f) {
+bool search(Node* root, Lambda f, double cutoff) {
 	set<pair<double,Node*>> frontier;
 	set<string> visited; // los estados visitados
 
@@ -93,9 +93,12 @@ bool search(Node* root, Lambda f) {
 		// cout << frontier.size() << endl;
 		Node* parent = (*frontier.begin()).second;
 		frontier.erase(frontier.begin());
-		// if (visited.find(parent->state) != visited.end()) {
-		// 	continue;
-		// }
+		if (parent->cost > cutoff) {
+			continue;
+		}
+		if (visited.find(parent->state) != visited.end()) {
+			continue;
+		}
 		visited.insert(parent->state);
 		if (goal_test(parent)) {
 			cout << "REACHED GOAL STATE" << endl;
@@ -122,13 +125,13 @@ typedef double (*Heuristic)(Node*);
 bool greedy(Node* root, Heuristic h) {
 	// no tengo ni la más pálida idea de porque necesito colocar un ampersand para que funcione
 	auto lambda = [&](Node* n){return h(n);};
-	return search(root, lambda);
+	return search(root, lambda, 15.0);
 }
 
 
 bool a_star(Node* root, Heuristic h) {
 	auto lambda = [&](Node* n){return n->cost + h(n);};
-	return search(root, lambda);
+	return search(root, lambda, 15.0);
 }
 
 
