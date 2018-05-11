@@ -119,6 +119,7 @@ bool search(Node* root, Lambda f) {
 typedef double (*Heuristic)(Node*);
 
 bool greedy(Node* root, Heuristic h) {
+	// no tengo ni la más pálida idea de porque necesito colocar un ampersand para que funcione
 	auto lambda = [&](Node* n){return h(n);};
 	return search(root, lambda);
 }

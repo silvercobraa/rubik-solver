@@ -9,6 +9,7 @@
 
 #include "search.hpp"
 #include "scramble.hpp"
+#include "database.hpp"
 
 using namespace std;
 
@@ -27,7 +28,6 @@ Node* make_root() {
 	return root;
 }
 
-Heuristic h = heuristic2;
 
 int main(int argc, char const *argv[]) {
 	if (argc < 2) {
@@ -35,8 +35,9 @@ int main(int argc, char const *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	Node* root = make_root();
+	Heuristic h = heuristic2;
 	// scramble(root, read_moves());
-	random_scramble(root, 5);
+	// random_scramble(root, 5);
 	string argument(argv[1]);
 	if (argument == "bfs") {
 		bfs(root);
@@ -54,6 +55,10 @@ int main(int argc, char const *argv[]) {
 		load_pattern_database("pattern_database.txt");
 		cout << "Pattern database loaded" << endl;
 		pattern_database_search("pattern_database.txt", root);
+	}
+	else if (argument == "pdgen") {
+		root->state = solved_state;
+		generate_pattern_database(root);
 	}
 	else {
 		cout << "what" << endl;

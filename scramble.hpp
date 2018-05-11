@@ -9,6 +9,8 @@
 #include <string>
 #include <algorithm>
 
+#include "problem.hpp"
+
 void scramble(Node* root, std::string moves) {
 	auto ss = std::stringstream(moves);
 	std::string move;
