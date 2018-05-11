@@ -36,6 +36,7 @@ int main(int argc, char const *argv[]) {
 	}
 	Node* root = make_root();
 	Heuristic h = heuristic2;
+	root->state = "ryb""gwr""boy""goy""gry""bow""rbw""gow";
 	// scramble(root, read_moves());
 	// random_scramble(root, 5);
 	string argument(argv[1]);

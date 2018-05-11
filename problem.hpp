@@ -15,9 +15,6 @@
 // colores rojo, blanco y azul en las coordenadas x, y y z respectivamente.
 enum Offset {X, Y, Z};
 
-// los colores del cubo resuelto, en el orden R U F L D B
-std::vector<char> color = {'b', 'r', 'y', 'g', 'o', 'w'};
-
 struct Node {
 	// este string contiene 3x8 caracteres, agrupados de a 3 consecutivos. Cada
 	// grupo de 3 caracteres corresponde a una esquina del cubo, y cada uno de
@@ -106,15 +103,6 @@ std::string R_(std::string& state) {
 	return x_rotation(state, 2, 3, 1, 0);
 }
 
-std::string L(std::string& state) {
-	return x_rotation(state, 4, 6, 7, 5);
-}
-
-// L'
-std::string L_(std::string& state) {
-	return x_rotation(state, 5, 7, 6, 4);
-}
-
 std::string U(std::string& state) {
 	return y_rotation(state, 0, 4, 5, 1);
 }
@@ -123,16 +111,6 @@ std::string U(std::string& state) {
 std::string U_(std::string& state) {
 	return y_rotation(state, 1, 5, 4, 0);
 }
-
-std::string D(std::string& state) {
-	return y_rotation(state, 2, 3, 7, 6);
-}
-
-// U'
-std::string D_(std::string& state) {
-	return y_rotation(state, 6, 7, 3, 2);
-}
-
 
 std::string F(std::string& state) {
 	return z_rotation(state, 0, 2, 6, 4);
@@ -143,106 +121,12 @@ std::string F_(std::string& state) {
 	return z_rotation(state, 4, 6, 2, 0);
 }
 
-std::string B(std::string& state) {
-	return z_rotation(state, 1, 5, 7, 3);
-}
 
-// B'
-std::string B_(std::string& state) {
-	return z_rotation(state, 3, 7, 5, 1);
-}
-
-// ROTACIONES DE CUBO COMPETO
-
-std::string x(std::string& state) {
-	std::string new_state = state;
-	// resto equivale a R
-	swap4(new_state, 0*CORNER + Z, 1*CORNER + Y, 3*CORNER + Z, 2*CORNER + Y);
-	swap4(new_state, 0*CORNER + X, 1*CORNER + X, 3*CORNER + X, 2*CORNER + X);
-	swap4(new_state, 0*CORNER + Y, 1*CORNER + Z, 3*CORNER + Y, 2*CORNER + Z);
-	// esto equivale a L'
-	swap4(new_state, 4*CORNER + Z, 5*CORNER + Y, 7*CORNER + Z, 6*CORNER + Y);
-	swap4(new_state, 4*CORNER + X, 5*CORNER + X, 7*CORNER + X, 6*CORNER + X);
-	swap4(new_state, 4*CORNER + Y, 5*CORNER + Z, 7*CORNER + Y, 6*CORNER + Z);
-	return new_state;
-}
-
-std::string x_(std::string& state) {
-	std::string new_state = state;
-	// esto equivale a R'
-	swap4(new_state, 2*CORNER + Z, 3*CORNER + Y, 1*CORNER + Z, 0*CORNER + Y);
-	swap4(new_state, 2*CORNER + X, 3*CORNER + X, 1*CORNER + X, 0*CORNER + X);
-	swap4(new_state, 2*CORNER + Y, 3*CORNER + Z, 1*CORNER + Y, 0*CORNER + Z);
-	// esto equivale a L
-	swap4(new_state, 6*CORNER + Z, 7*CORNER + Y, 5*CORNER + Z, 4*CORNER + Y);
-	swap4(new_state, 6*CORNER + X, 7*CORNER + X, 5*CORNER + X, 4*CORNER + X);
-	swap4(new_state, 6*CORNER + Y, 7*CORNER + Z, 5*CORNER + Y, 4*CORNER + Z);
-	return new_state;
-}
-
-std::string y(std::string& state)
-{
-	std::string new_state = state;
-	// esto equivale a U
-	swap4(new_state, 0*CORNER + X, 4*CORNER + Z, 5*CORNER + X, 1*CORNER + Z);
-	swap4(new_state, 0*CORNER + Y, 4*CORNER + Y, 5*CORNER + Y, 1*CORNER + Y);
-	swap4(new_state, 0*CORNER + Z, 4*CORNER + X, 5*CORNER + Z, 1*CORNER + X);
-	// esto equivale a D'
-	swap4(new_state, 2*CORNER + X, 6*CORNER + Z, 7*CORNER + X, 3*CORNER + Z);
-	swap4(new_state, 2*CORNER + Y, 6*CORNER + Y, 7*CORNER + Y, 3*CORNER + Y);
-	swap4(new_state, 2*CORNER + Z, 6*CORNER + X, 7*CORNER + Z, 3*CORNER + X);
-	return new_state;
-}
-
-std::string y_(std::string& state)
-{
-	std::string new_state = state;
-	// esto equivale a U'
-	swap4(new_state, 1*CORNER + X, 5*CORNER + Z, 4*CORNER + X, 0*CORNER + Z);
-	swap4(new_state, 1*CORNER + Y, 5*CORNER + Y, 4*CORNER + Y, 0*CORNER + Y);
-	swap4(new_state, 1*CORNER + Z, 5*CORNER + X, 4*CORNER + Z, 0*CORNER + X);
-	// esto equivale a D
-	swap4(new_state, 3*CORNER + X, 7*CORNER + Z, 6*CORNER + X, 2*CORNER + Z);
-	swap4(new_state, 3*CORNER + Y, 7*CORNER + Y, 6*CORNER + Y, 2*CORNER + Y);
-	swap4(new_state, 3*CORNER + Z, 7*CORNER + X, 6*CORNER + Z, 2*CORNER + X);
-	return new_state;
-}
-
-std::string z(std::string& state)
-{
-	std::string new_state = state;
-	// este movimiento equivale a F
-	swap4(new_state, 0*CORNER + X, 2*CORNER + Y, 6*CORNER + X, 4*CORNER + Y);
-	swap4(new_state, 0*CORNER + Z, 2*CORNER + Z, 6*CORNER + Z, 4*CORNER + Z);
-	swap4(new_state, 0*CORNER + Y, 2*CORNER + X, 6*CORNER + Y, 4*CORNER + X);
-	// este movimiento equivale a B'
-	swap4(new_state, 1*CORNER + X, 3*CORNER + Y, 7*CORNER + X, 5*CORNER + Y);
-	swap4(new_state, 1*CORNER + Z, 3*CORNER + Z, 7*CORNER + Z, 5*CORNER + Z);
-	swap4(new_state, 1*CORNER + Y, 3*CORNER + X, 7*CORNER + Y, 5*CORNER + X);
-	return new_state;
-}
-
-std::string z_(std::string& state)
-{
-	std::string new_state = state;
-	// este movimiento equivale a F'
-	swap4(new_state, 4*CORNER + X, 6*CORNER + Y, 2*CORNER + X, 0*CORNER + Y);
-	swap4(new_state, 4*CORNER + Z, 6*CORNER + Z, 2*CORNER + Z, 0*CORNER + Z);
-	swap4(new_state, 4*CORNER + Y, 6*CORNER + X, 2*CORNER + Y, 0*CORNER + X);
-	// este movimiento equivale a B
-	swap4(new_state, 5*CORNER + X, 7*CORNER + Y, 3*CORNER + X, 1*CORNER + Y);
-	swap4(new_state, 5*CORNER + Z, 7*CORNER + Z, 3*CORNER + Z, 1*CORNER + Z);
-	swap4(new_state, 5*CORNER + Y, 7*CORNER + X, 3*CORNER + Y, 1*CORNER + X);
-	return new_state;
-}
-
-
-
-static std::string solved_state = "bry""brw""boy""bow""gry""grw""goy""gow";
+static std::string solved_state = "bry""brw""boy""bow""gry""grw""goy";
 
 // retorna la cantidad de piezas en posición incorrecta, dividida por 4
 double heuristic(Node* node) {
-	static std::vector<std::string> solved = {"bry", "brw", "boy", "bow", "gry", "grw", "goy", "gow"};
+	static std::vector<std::string> solved = {"bry", "brw", "boy", "bow", "gry", "grw", "goy"};
 	int sum = 0;
 	for (int i = 0; i < solved.size(); i++) {
 		std::string sub = node->state.substr(i*3, 3);
@@ -271,7 +155,7 @@ static std::map<std::string, std::vector<int>> manhattan_distance = {
 	{"gry", {1, 2, 2, 3, 0, 1, 1, 2}},
 	{"grw", {2, 1, 3, 2, 1, 0, 2, 1}},
 	{"goy", {2, 3, 1, 2, 1, 2, 0, 1}},
-	{"gow", {3, 2, 2, 1, 2, 1, 1, 0}},
+	// {"gow", {3, 2, 2, 1, 2, 1, 1, 0}},
 };
 
 // esta heurística usa la distancia de manhattan de todas las piezas dividida por 4
@@ -300,54 +184,40 @@ bool goal_test(Node* node) {
 typedef std::string (*Action)(std::string&);
 
 std::vector<std::string> action_name = {
-	"F", "F'", "B", "B'",
-	"R", "R'", "L", "L'",
-	"U", "U'", "D", "D'",
-	//"x", "x'",
-	//"y", "y'",
-	//"z", "z'",
+	"F", "F'",
+	"R", "R'",
+	"U", "U'",
 };
 
 std::vector<Action> actions = {
-	F, F_, B, B_,
-	R, R_, L, L_,
-	U, U_, D, D_,
-	//x, x_,
-	//y, y_,
-	//z, z_,
+	F, F_,
+	R, R_,
+	U, U_,
 };
 
 // este vector contiene el indece de la acción inversa de la acción i.
 // por ejemplo, la acción F (posicion 0) tiene como inversa la acción F' (posición 1)
 std::vector<int> reverse_action = {
-	1, 0, 3, 2,
-	5, 4, 7, 6,
-	9, 8, 11, 10,
-	//13, 12,
-	//15, 14,
-	//17, 16,
+	1, 0,
+	3, 2,
+	5, 4,
 };
 
 // las rotaciones de 90 grados de una cara tienen costo 1, mientras que las
 // rotaciones en 90 grados del cubo completo tienen costo 2 (pues equivale a girar
 // 90 grados 2 caras opuestas)
 std::vector<int> action_cost = {
-	1, 1, 1, 1,
-	1, 1, 1, 1,
-	1, 1, 1, 1,
-	//2, 2,
-	//2, 2,
-	//2, 2,
+	1, 1,
+	1, 1,
+	1, 1,
 };
 
 std::map<std::string, Action> action_by_name = {
-	{"F", F}, {"F'", F_}, {"B", B}, {"B'", B_},
-	{"R", R}, {"R'", R_}, {"L", L}, {"L'", L_},
-	{"U", U}, {"U'", U_}, {"D", D}, {"D'", D_},
-	//{"x", x}, {"x'", x_},
-	//{"y", y}, {"y'", y_},
-	//{"z", z}, {"z'", z_},
+	{"F", F}, {"F'", F_},
+	{"R", R}, {"R'", R_},
+	{"U", U}, {"U'", U_},
 };
+
 
 Node* child_node(Node* parent, int action_id) {
 	Node* child = new Node();
@@ -370,28 +240,6 @@ void solution(Node* node) {
 		std::cout << action_name[stk.top()];
 		stk.pop();
 	}
-	std::cout << std::endl;
-}
-
-
-void print(Node& node) {
-	std::cout << "   +--+" << '\n';
-	std::cout << "   |" << node.state[7*CORNER + Z] << node.state[3*CORNER + Z] << '|' << std::endl;
-	std::cout << "   |" << node.state[5*CORNER + Z] << node.state[1*CORNER + Z] << '|' << std::endl;
-	std::cout << "   +--+" << '\n';
-	std::cout << "   |" << node.state[5*CORNER + Y] << node.state[1*CORNER + Y] << '|' << std::endl;
-	std::cout << "   |" << node.state[4*CORNER + Y] << node.state[0*CORNER + Y] << '|' << std::endl;
-	std::cout << "+--+--+--+" << '\n';
-	std::cout << '|' << node.state[5*CORNER + X] << node.state[4*CORNER + X];
-	std::cout << '|' << node.state[4*CORNER + Z] << node.state[0*CORNER + Z];
-	std::cout << '|' << node.state[0*CORNER + X] << node.state[1*CORNER + X] << '|' << std::endl;
-	std::cout << '|' << node.state[7*CORNER + X] << node.state[6*CORNER + X];
-	std::cout << '|' << node.state[6*CORNER + Z] << node.state[2*CORNER + Z];
-	std::cout << '|' << node.state[2*CORNER + X] << node.state[3*CORNER + X] << '|' << std::endl;
-	std::cout << "+--+--+--+" << '\n';
-	std::cout << "   |" << node.state[6*CORNER + Y] << node.state[2*CORNER + Y] << '|' << std::endl;
-	std::cout << "   |" << node.state[7*CORNER + Y] << node.state[3*CORNER + Y] << '|' << std::endl;
-	std::cout << "   +--+" << '\n';
 	std::cout << std::endl;
 }
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 #include <set>
+#include <unordered_set>
 #include <map>
 #include <queue>
 #include <fstream>
@@ -47,7 +48,7 @@ bool dfs(Node* root, int depth, int max_depth) {
 
 bool bfs(Node* root) {
 	queue<Node*> q;
-	set<string> v;
+	unordered_set<string> v;
 	q.push(root);
 
 	while(!q.empty()) {
