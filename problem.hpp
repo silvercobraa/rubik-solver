@@ -16,7 +16,7 @@
 enum Offset {X, Y, Z};
 
 struct Node {
-	// este string contiene 3x8 caracteres, agrupados de a 3 consecutivos. Cada
+	// este string contiene 3x7 caracteres, agrupados de a 3 consecutivos. Cada
 	// grupo de 3 caracteres corresponde a una esquina del cubo, y cada uno de
 	// dichos caracteres corresponden a los colores en la cara ortogonal al eje
 	// 'x' (right-left), 'y' (up-down), y 'z' (front-back), respectivamente.
@@ -28,7 +28,7 @@ struct Node {
 	//     4: left-up-front
 	//     5: left-up-back
 	//     6: left-down-front
-	//     7: left-down-back
+	// La esquina left-down-back no se representa, ya que esta define el sistema de referencia
 	// Cada caracter puede ser uno de los siguientes:
 	//     r: rojo
 	//     b: azul
@@ -121,7 +121,8 @@ std::string F_(std::string& state) {
 	return z_rotation(state, 4, 6, 2, 0);
 }
 
-
+// el estado resuelto es aquel que tiene las caras izquierda, inferior y trasera
+// con los colores verde, naranjo y blanco, respectivamente
 static std::string solved_state = "bry""brw""boy""bow""gry""grw""goy";
 
 // retorna la cantidad de piezas en posición incorrecta, dividida por 4
