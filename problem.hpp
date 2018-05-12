@@ -4,39 +4,164 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <algorithm>
 #include <stack>
 
-#define CORNER 3
 #define NO_ACTION -1
 
-// Este es el offset que tiene en la representación estado cada dirección.
-// Por ejemplo, si el estado comienza con rwb, significa que la pieza 0 tiene
-// colores rojo, blanco y azul en las coordenadas x, y y z respectivamente.
-enum Offset {X, Y, Z};
+// Cada estado esta representado por piezas, y cada pieza por los 3 colores que
+// la componen. El estado está representado como un entero de 64 bits, donde cada
+// grupo de 9 bits corresponde a una pieza, y cada subgrupo de 3 bits corresponde
+// a un color. De las 8 piezas del cubo, 7 se mueven y una es fija. Esta última
+// define el sistema de referencia usado para determinar si el cubo está resuelto
+// o no. El sistema de referencia es:
+//   Eje x: caras derecha (+) e izquierda (-).
+//   Eje y: caras superior (+) e inferior (-).
+//   Eje z: caras frontal (+) y trasera (-).
+// La pieza fija es la izquierda inferior trasera, por lo tanto las acciones
+// posible son: R, R', U, U', F y F'
+// Así, las demás acciones no necesitan ser representadas, ya que equivalen a
+// alguna de las anteriormente descritas, mas un cambio en el sistema de referencia.
+
+// Definición de colores
+#define BLUE 0L
+#define RED 1L
+#define YELLOW 2L
+#define GREEN 3L
+#define ORANGE 4L
+#define WHITE 5L
+
+// Mascaras que entregan los bits pertenecientes a una pieza determinada. Ej: RUF_MASK entrega
+// los 9 bits correspondientes a la esquina derecha superior frontal (cuando se hace el & con el estado actual y se hace el desplazamiento correspondiente).
+#define RUF 0L
+#define RUB 9L
+#define RDF 18L
+#define RDB 27L
+#define LUF 36L
+#define LUB 45L
+#define LDF 54L
+
+// esta mascara me da los 3 bits menos significativos
+#define MAGIC 0x7UL
+
+// esto me da los offset de los colores en cada coordenada en una pieza
+#define X 0L
+#define Y 3L
+#define Z 6L
+
+// El estado se considerará resuelto con la convención de que los colores sean:
+// R: BLUE
+// U: RED
+// F: YELLOW
+// L: GREEN
+// D: ORANGE
+// B: WHITE
+const uint64_t solved_state =
+	(BLUE << (X + RUF)) |
+	(RED << (Y + RUF)) |
+	(YELLOW << (Z + RUF)) |
+
+	(BLUE << (X + RUB)) |
+	(RED << (Y + RUB)) |
+	(WHITE << (Z + RUB)) |
+
+	(BLUE << (X + RDF)) |
+	(ORANGE << (Y + RDF)) |
+	(YELLOW << (Z + RDF)) |
+
+	(BLUE << (X + RDB)) |
+	(ORANGE << (Y + RDB)) |
+	(WHITE << (Z + RDB)) |
+
+	(GREEN << (X + LUF)) |
+	(RED << (Y + LUF)) |
+	(YELLOW << (Z + LUF)) |
+
+	(GREEN << (X + LUB)) |
+	(RED << (Y + LUB)) |
+	(WHITE << (Z + LUB)) |
+
+	(GREEN << (X + LDF)) |
+	(ORANGE << (Y + LDF)) |
+	(YELLOW << (Z + LDF))
+;
+
+static uint64_t swap4(uint64_t state, uint64_t off0, uint64_t off1, uint64_t off2, uint64_t off3) {
+	// guardo los valores de los cubelets a rotar
+	uint64_t new0 = (state >> off3) & MAGIC;
+	uint64_t new1 = (state >> off0) & MAGIC;
+	uint64_t new2 = (state >> off1) & MAGIC;
+	uint64_t new3 = (state >> off2) & MAGIC;
+	// borro los valores de los cubelets a rotar
+	state &= ~(MAGIC << off0);
+	state &= ~(MAGIC << off1);
+	state &= ~(MAGIC << off2);
+	state &= ~(MAGIC << off3);
+	// actualizo los valores de los cubelets, rotados
+	state |= new0 << off0;
+	state |= new1 << off1;
+	state |= new2 << off2;
+	state |= new3 << off3;
+	return state;
+}
+
+// rotaciones sobre el eje x
+static uint64_t x_rotation(uint64_t state, uint64_t c0, uint64_t c1, uint64_t c2, uint64_t c3)
+{
+	state = swap4(state, c0 + Z, c1 + Y, c2 + Z, c3 + Y);
+	state = swap4(state, c0 + X, c1 + X, c2 + X, c3 + X);
+	state = swap4(state, c0 + Y, c1 + Z, c2 + Y, c3 + Z);
+	return state;
+}
+
+// rotaciones sobre el eje y
+static uint64_t y_rotation(uint64_t state, uint64_t c0, uint64_t c1, uint64_t c2, uint64_t c3)
+{
+	state = swap4(state, c0 + X, c1 + Z, c2 + X, c3 + Z);
+	state = swap4(state, c0 + Y, c1 + Y, c2 + Y, c3 + Y);
+	state = swap4(state, c0 + Z, c1 + X, c2 + Z, c3 + X);
+	return state;
+}
+
+// rotaciones sobre el eje z
+static uint64_t z_rotation(uint64_t state, uint64_t c0, uint64_t c1, uint64_t c2, uint64_t c3)
+{
+	state = swap4(state, c0 + X, c1 + Y, c2 + X, c3 + Y);
+	state = swap4(state, c0 + Z, c1 + Z, c2 + Z, c3 + Z);
+	state = swap4(state, c0 + Y, c1 + X, c2 + Y, c3 + X);
+	return state;
+}
+
+uint64_t R(uint64_t state) {
+	return x_rotation(state, RUF, RUB, RDB, RDF);
+}
+
+// R'
+uint64_t R_(uint64_t state) {
+	return x_rotation(state, RDF, RDB, RUB, RUF);
+}
+
+uint64_t U(uint64_t state) {
+	return y_rotation(state, RUF, LUF, LUB, RUB);
+}
+
+// U'
+uint64_t U_(uint64_t state) {
+	return y_rotation(state, RUB, LUB, LUF, RUF);
+}
+
+uint64_t F(uint64_t state) {
+	return z_rotation(state, RUF, RDF, LDF, LUF);
+}
+
+// F'
+uint64_t F_(uint64_t state) {
+	return z_rotation(state, LUF, LDF, RDF, RUF);
+}
 
 struct Node {
-	// este string contiene 3x7 caracteres, agrupados de a 3 consecutivos. Cada
-	// grupo de 3 caracteres corresponde a una esquina del cubo, y cada uno de
-	// dichos caracteres corresponden a los colores en la cara ortogonal al eje
-	// 'x' (right-left), 'y' (up-down), y 'z' (front-back), respectivamente.
-	// Las esquinas están numeradas de la siguiente forma:
-	//     0: right-up-front
-	//     1: right-up-back
-	//     2: right-down-front
-	//     3: right-down-back
-	//     4: left-up-front
-	//     5: left-up-back
-	//     6: left-down-front
-	// La esquina left-down-back no se representa, ya que esta define el sistema de referencia
-	// Cada caracter puede ser uno de los siguientes:
-	//     r: rojo
-	//     b: azul
-	//     w: blanco
-	//     o: naranjo
-	//     g: verde
-	//     y: amarillo
-	std::string state;
+	uint64_t state;
 	int cost;
 	int action;
 	struct Node* parent; // el nodo que se visitó antes que éste
@@ -48,124 +173,91 @@ struct Node {
 	}
 };
 
-// Intercambia 4 posiciones en 'circular fashion'. Es la base de todos los movimientos
-// p1 <- p0
-// p2 <- p1
-// p3 <- p2
-// p0 <- p3
-static void swap4(std::string& state, int p0, int p1, int p2, int p3) {
-	int aux1 = state[p1];
-	int aux2 = state[p3];
-	state[p1] = state[p0];
-	state[p3] = state[p2];
-	state[p0] = aux2;
-	state[p2] = aux1;
-}
 
-// rotaciones sobre el eje x
-static std::string x_rotation(std::string& state, int c0, int c1, int c2, int c3)
-{
-	std::string new_state = state;
-	swap4(new_state, c0*CORNER + Z, c1*CORNER + Y, c2*CORNER + Z, c3*CORNER + Y);
-	swap4(new_state, c0*CORNER + X, c1*CORNER + X, c2*CORNER + X, c3*CORNER + X);
-	swap4(new_state, c0*CORNER + Y, c1*CORNER + Z, c2*CORNER + Y, c3*CORNER + Z);
-	return new_state;
-}
-
-// rotaciones sobre el eje y
-static std::string y_rotation(std::string& state, int c0, int c1, int c2, int c3)
-{
-	std::string new_state = state;
-	swap4(new_state, c0*CORNER + X, c1*CORNER + Z, c2*CORNER + X, c3*CORNER + Z);
-	swap4(new_state, c0*CORNER + Y, c1*CORNER + Y, c2*CORNER + Y, c3*CORNER + Y);
-	swap4(new_state, c0*CORNER + Z, c1*CORNER + X, c2*CORNER + Z, c3*CORNER + X);
-	return new_state;
-}
-
-// rotaciones sobre el eje z
-static std::string z_rotation(std::string& state, int c0, int c1, int c2, int c3)
-{
-	std::string new_state = state;
-	swap4(new_state, c0*CORNER + X, c1*CORNER + Y, c2*CORNER + X, c3*CORNER + Y);
-	swap4(new_state, c0*CORNER + Z, c1*CORNER + Z, c2*CORNER + Z, c3*CORNER + Z);
-	swap4(new_state, c0*CORNER + Y, c1*CORNER + X, c2*CORNER + Y, c3*CORNER + X);
-	return new_state;
-}
-
-// ROTACIONES DE CARAS EN 90 GRADOS
-
-std::string R(std::string& state) {
-	return x_rotation(state, 0, 1, 3, 2);
-}
-
-// R'
-std::string R_(std::string& state) {
-	return x_rotation(state, 2, 3, 1, 0);
-}
-
-std::string U(std::string& state) {
-	return y_rotation(state, 0, 4, 5, 1);
-}
-
-// U'
-std::string U_(std::string& state) {
-	return y_rotation(state, 1, 5, 4, 0);
-}
-
-std::string F(std::string& state) {
-	return z_rotation(state, 0, 2, 6, 4);
-}
-
-// F'
-std::string F_(std::string& state) {
-	return z_rotation(state, 4, 6, 2, 0);
-}
-
-// el estado resuelto es aquel que tiene las caras izquierda, inferior y trasera
-// con los colores verde, naranjo y blanco, respectivamente
-static std::string solved_state = "bry""brw""boy""bow""gry""grw""goy";
-
-// retorna la cantidad de piezas en posición incorrecta, dividida por 4
 double heuristic(Node* node) {
-	static std::vector<std::string> solved = {"bry", "brw", "boy", "bow", "gry", "grw", "goy"};
-	int sum = 0;
-	for (int i = 0; i < solved.size(); i++) {
-		std::string sub = node->state.substr(i*3, 3);
-		std::sort(solved[i].begin(), solved[i].end());
-		bool correct_position = false;
-		do {
-			if (sub == solved[i]) {
-				correct_position = true;
-				break;
-			}
-		} while(std::next_permutation(solved[i].begin(), solved[i].end()));
-		if (!correct_position) {
-			sum++;
-		}
-	}
-	return sum / 4.0;
+	// static std::vector<std::string> solved = {"bry", "brw", "boy", "bow", "gry", "grw", "goy"};
+	// int sum = 0;
+	// for (int i = 0; i < solved.size(); i++) {
+	// 	std::string sub = node->state.substr(i*3, 3);
+	// 	std::sort(solved[i].begin(), solved[i].end());
+	// 	bool correct_position = false;
+	// 	do {
+	// 		if (sub == solved[i]) {
+	// 			correct_position = true;
+	// 			break;
+	// 		}
+	// 	} while(std::next_permutation(solved[i].begin(), solved[i].end()));
+	// 	if (!correct_position) {
+	// 		sum++;
+	// 	}
+	// }
+	// return sum / 4.0;
 }
 
 // esta matriz me dice por cada pieza y por cada posición a que distancia
 // (de manhattan) esta de su posición correcta
-static std::map<std::string, std::vector<int>> manhattan_distance = {
-	{"bry", {0, 1, 1, 2, 1, 2, 2, 3}},
-	{"brw", {1, 0, 2, 1, 2, 1, 3, 2}},
-	{"boy", {1, 2, 0, 1, 2, 3, 1, 2}},
-	{"bow", {2, 1, 1, 0, 3, 2, 2, 1}},
-	{"gry", {1, 2, 2, 3, 0, 1, 1, 2}},
-	{"grw", {2, 1, 3, 2, 1, 0, 2, 1}},
-	{"goy", {2, 3, 1, 2, 1, 2, 0, 1}},
+// me gustaria hacerlo más elegante...
+static std::unordered_map<uint64_t, std::vector<int>> manhattan_distance = {
+	{(BLUE << X) | (RED << Y) | (YELLOW << Z), {0, 1, 1, 2, 1, 2, 2, 3}},
+	{(BLUE << X) | (RED << Y) | (WHITE << Z), {1, 0, 2, 1, 2, 1, 3, 2}},
+	{(BLUE << X) | (ORANGE << Y) | (YELLOW << Z), {1, 2, 0, 1, 2, 3, 1, 2}},
+	{(BLUE << X) | (ORANGE << Y) | (WHITE << Z), {2, 1, 1, 0, 3, 2, 2, 1}},
+	{(GREEN << X) | (RED << Y) | (YELLOW << Z), {1, 2, 2, 3, 0, 1, 1, 2}},
+	{(GREEN << X) | (RED << Y) | (WHITE << Z), {2, 1, 3, 2, 1, 0, 2, 1}},
+	{(GREEN << X) | (ORANGE << Y) | (YELLOW << Z), {2, 3, 1, 2, 1, 2, 0, 1}},
 	// {"gow", {3, 2, 2, 1, 2, 1, 1, 0}},
+	{(RED << X) | (YELLOW << Y) | (BLUE << Z), {0, 1, 1, 2, 1, 2, 2, 3}},
+	{(RED << X) | (WHITE << Y) | (BLUE << Z), {1, 0, 2, 1, 2, 1, 3, 2}},
+	{(ORANGE << X) | (YELLOW << Y) | (BLUE << Z), {1, 2, 0, 1, 2, 3, 1, 2}},
+	{(ORANGE << X) | (WHITE << Y) | (BLUE << Z), {2, 1, 1, 0, 3, 2, 2, 1}},
+	{(RED << X) | (YELLOW << Y) | (GREEN << Z), {1, 2, 2, 3, 0, 1, 1, 2}},
+	{(RED << X) | (WHITE << Y) | (GREEN << Z), {2, 1, 3, 2, 1, 0, 2, 1}},
+	{(ORANGE << X) | (YELLOW << Y) | (GREEN << Z), {2, 3, 1, 2, 1, 2, 0, 1}},
+
+	{(YELLOW << X) | (BLUE << Y) | (RED << Z), {0, 1, 1, 2, 1, 2, 2, 3}},
+	{(WHITE << X) | (BLUE << Y) | (RED << Z), {1, 0, 2, 1, 2, 1, 3, 2}},
+	{(YELLOW << X) | (BLUE << Y) | (ORANGE << Z), {1, 2, 0, 1, 2, 3, 1, 2}},
+	{(WHITE << X) | (BLUE << Y) | (ORANGE << Z), {2, 1, 1, 0, 3, 2, 2, 1}},
+	{(YELLOW << X) | (GREEN << Y) | (RED << Z), {1, 2, 2, 3, 0, 1, 1, 2}},
+	{(WHITE << X) | (GREEN << Y) | (RED << Z), {2, 1, 3, 2, 1, 0, 2, 1}},
+	{(YELLOW << X) | (GREEN << Y) | (ORANGE << Z), {2, 3, 1, 2, 1, 2, 0, 1}},
+
+	{(RED << X) | (BLUE << Y) | (YELLOW << Z), {0, 1, 1, 2, 1, 2, 2, 3}},
+	{(RED << X) | (BLUE << Y) | (WHITE << Z), {1, 0, 2, 1, 2, 1, 3, 2}},
+	{(ORANGE << X) | (BLUE << Y) | (YELLOW << Z), {1, 2, 0, 1, 2, 3, 1, 2}},
+	{(ORANGE << X) | (BLUE << Y) | (WHITE << Z), {2, 1, 1, 0, 3, 2, 2, 1}},
+	{(RED << X) | (GREEN << Y) | (YELLOW << Z), {1, 2, 2, 3, 0, 1, 1, 2}},
+	{(RED << X) | (GREEN << Y) | (WHITE << Z), {2, 1, 3, 2, 1, 0, 2, 1}},
+	{(ORANGE << X) | (GREEN << Y) | (YELLOW << Z), {2, 3, 1, 2, 1, 2, 0, 1}},
+
+	{(BLUE << X) | (YELLOW << Y) | (RED << Z), {0, 1, 1, 2, 1, 2, 2, 3}},
+	{(BLUE << X) | (WHITE << Y) | (RED << Z), {1, 0, 2, 1, 2, 1, 3, 2}},
+	{(BLUE << X) | (YELLOW << Y) | (ORANGE << Z), {1, 2, 0, 1, 2, 3, 1, 2}},
+	{(BLUE << X) | (WHITE << Y) | (ORANGE << Z), {2, 1, 1, 0, 3, 2, 2, 1}},
+	{(GREEN << X) | (YELLOW << Y) | (RED << Z), {1, 2, 2, 3, 0, 1, 1, 2}},
+	{(GREEN << X) | (WHITE << Y) | (RED << Z), {2, 1, 3, 2, 1, 0, 2, 1}},
+	{(GREEN << X) | (YELLOW << Y) | (ORANGE << Z), {2, 3, 1, 2, 1, 2, 0, 1}},
+
+	{(YELLOW << X) | (RED << Y) | (BLUE << Z), {0, 1, 1, 2, 1, 2, 2, 3}},
+	{(WHITE << X) | (RED << Y) | (BLUE << Z), {1, 0, 2, 1, 2, 1, 3, 2}},
+	{(YELLOW << X) | (ORANGE << Y) | (BLUE << Z), {1, 2, 0, 1, 2, 3, 1, 2}},
+	{(WHITE << X) | (ORANGE << Y) | (BLUE << Z), {2, 1, 1, 0, 3, 2, 2, 1}},
+	{(YELLOW << X) | (RED << Y) | (GREEN << Z), {1, 2, 2, 3, 0, 1, 1, 2}},
+	{(WHITE << X) | (RED << Y) | (GREEN << Z), {2, 1, 3, 2, 1, 0, 2, 1}},
+	{(YELLOW << X) | (ORANGE << Y) | (GREEN << Z), {2, 3, 1, 2, 1, 2, 0, 1}},
 };
+
+
 
 // esta heurística usa la distancia de manhattan de todas las piezas dividida por 4
 double heuristic2(Node* node) {
 	int sum = 0;
-	for (int i = 0; i < node->state.size(); i += 3) {
-		std::string sub = node->state.substr(i, 3);
-		std::sort(sub.begin(), sub.end());
-		sum += manhattan_distance[sub][i/3];
+	uint64_t state = node->state;
+	for (int i = 0; i < 7; i++) {
+		uint64_t mask = ~((~0UL) << 9);
+		uint64_t piece = state & mask;
+		state >>= 9;
+		sum += manhattan_distance[piece][i];
 	}
 	return sum / 4.0;
 }
@@ -182,7 +274,7 @@ bool goal_test(Node* node) {
 
 }
 
-typedef std::string (*Action)(std::string&);
+typedef uint64_t (*Action)(uint64_t);
 
 std::vector<std::string> action_name = {
 	"F", "F'",

@@ -10,9 +10,9 @@
 using namespace std;
 
 static bool PATTERN_DATABASE_LOADED = false;
-static std::map<std::string,std::string> pattern_database;
+static std::map<uint64_t,std::string> pattern_database;
 
-static bool visited(unordered_set<string>& s, Node* n)
+static bool visited(unordered_set<uint64_t>& s, Node* n)
 {
 	return s.find(n->state) != s.end();
 }
@@ -21,7 +21,7 @@ static bool visited(unordered_set<string>& s, Node* n)
 // Se puede almacenar el arbol completo BFS en memoria, pero los caminos no.
 // Sin embargo, podemos usar el disco...
 void generate_pattern_database(Node* root) {
-	unordered_set<string> s;
+	unordered_set<uint64_t> s;
 	queue<Node*> q;
 	q.push(root);
 	while (!q.empty()) {
@@ -52,16 +52,16 @@ void generate_pattern_database(Node* root) {
 
 
 void load_pattern_database(std::string pattern_database_file) {
-	string s;
-	std::ifstream file(pattern_database_file);
-	file >> s;
-	pattern_database[s] = "ALREADY SOLVED";
-	std::string state, moves;
-	while (file >> state >> moves) {
-		pattern_database[state] = moves;
-		// cout << pattern_database.size() << endl;
-	}
-	PATTERN_DATABASE_LOADED = true;
+	// string s;
+	// std::ifstream file(pattern_database_file);
+	// file >> s;
+	// pattern_database[s] = "ALREADY SOLVED";
+	// std::string state, moves;
+	// while (file >> state >> moves) {
+	// 	pattern_database[state] = moves;
+	// 	// cout << pattern_database.size() << endl;
+	// }
+	// PATTERN_DATABASE_LOADED = true;
 }
 
 

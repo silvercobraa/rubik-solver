@@ -17,7 +17,7 @@
 using namespace std;
 
 
-static bool dfs(set<string>& visited, Node* parent, int depth, int max_depth) {
+static bool dfs(set<uint64_t>& visited, Node* parent, int depth, int max_depth) {
 	if (depth > max_depth) {
 		return false;
 	}
@@ -41,14 +41,14 @@ static bool dfs(set<string>& visited, Node* parent, int depth, int max_depth) {
 
 
 bool dfs(Node* root, int depth, int max_depth) {
-	set<string> visited;
+	set<uint64_t> visited;
 	return dfs(visited, root, depth, max_depth);
 }
 
 
 bool bfs(Node* root) {
 	queue<Node*> q;
-	unordered_set<string> v;
+	unordered_set<uint64_t> v;
 	q.push(root);
 
 	while(!q.empty()) {
@@ -84,7 +84,7 @@ bool bfs(Node* root) {
 template <typename Lambda>
 bool search(Node* root, Lambda f, double cutoff) {
 	set<pair<double,Node*>> frontier;
-	set<string> visited; // los estados visitados
+	set<uint64_t> visited; // los estados visitados
 
 	frontier.insert({0, root});
 
@@ -125,7 +125,7 @@ typedef double (*Heuristic)(Node*);
 bool greedy(Node* root, Heuristic h) {
 	// no tengo ni la más pálida idea de porque necesito colocar un ampersand para que funcione
 	auto lambda = [&](Node* n){return h(n);};
-	return search(root, lambda, 15.0);
+	return search(root, lambda, 1e9);
 }
 
 
