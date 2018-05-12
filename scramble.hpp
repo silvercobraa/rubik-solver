@@ -2,14 +2,11 @@
 #define SCRAMBLE_HPP
 
 #include <iostream>
-#include <vector>
-#include <map>
-#include <set>
-#include <queue>
+#include <sstream>
 #include <string>
-#include <algorithm>
 
-#include "problem.hpp"
+#include "node.hpp"
+#include "actions.hpp"
 
 void scramble(Node* root, std::string moves) {
 	auto ss = std::stringstream(moves);
@@ -24,10 +21,10 @@ void random_scramble(Node* root, int moves) {
 	srand(time(0));
 	for (int i = 0; i < moves; i++) {
 		int r = rand() % actions.size();
-		cout << action_name[r] << ' ';
+		std::cout << action_name[r] << ' ';
 		root->state = actions[r](root->state);
 	}
-	cout << endl;
+	std::cout << std::endl;
 	return;
 }
 

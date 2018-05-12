@@ -1,11 +1,4 @@
 #include <iostream>
-#include <vector>
-#include <map>
-#include <set>
-#include <queue>
-#include <string>
-#include <algorithm>
-#include <random>
 
 #include "search.hpp"
 #include "scramble.hpp"
@@ -19,15 +12,6 @@ string read_moves() {
 	return moves;
 }
 
-Node* make_root() {
-	Node* root = new Node();
-	root->state = solved_state;
-	root->parent = NULL;
-	root->cost = 0;
-	root->action = NO_ACTION;
-	return root;
-}
-
 
 int main(int argc, char const *argv[]) {
 	if (argc < 2) {
@@ -36,7 +20,6 @@ int main(int argc, char const *argv[]) {
 	}
 	Node* root = make_root();
 	Heuristic h = heuristic2;
-	// root->state = "rgy""brw""ogy""bow""rby""grw""oby";
 	scramble(root, read_moves());
 	// random_scramble(root, 5);
 	string argument(argv[1]);
@@ -53,9 +36,9 @@ int main(int argc, char const *argv[]) {
 		greedy(root, h);
 	}
 	else if (argument == "pd") {
-		load_pattern_database("pattern_database.txt");
+		load_pattern_database("compact_pattern_database.txt");
 		cout << "Pattern database loaded" << endl;
-		pattern_database_search("pattern_database.txt", root);
+		pattern_database_search("compact_pattern_database.txt", root);
 	}
 	else if (argument == "pdgen") {
 		root->state = solved_state;
