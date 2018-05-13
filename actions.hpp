@@ -10,7 +10,7 @@
 
 typedef uint64_t (*Action)(uint64_t);
 
-// esta es la base de todos los movimientos
+// esta es la base de todos los movimientos de 90 grados
 static uint64_t swap4(uint64_t state, uint64_t off0, uint64_t off1, uint64_t off2, uint64_t off3) {
 	// guardo los valores de los cubelets a rotar
 	uint64_t new0 = (state >> off3) & MAGIC;
@@ -86,15 +86,15 @@ uint64_t F_(uint64_t state) {
 
 
 std::vector<std::string> action_name = {
-	"F", "F'",
 	"R", "R'",
 	"U", "U'",
+	"F", "F'",
 };
 
 std::vector<Action> actions = {
-	F, F_,
 	R, R_,
 	U, U_,
+	F, F_,
 };
 
 // este vector contiene el indece de la acción inversa de la acción i.
@@ -115,9 +115,9 @@ std::vector<int> action_cost = {
 };
 
 std::unordered_map<std::string, Action> action_by_name = {
-	{"F", F}, {"F'", F_},
 	{"R", R}, {"R'", R_},
 	{"U", U}, {"U'", U_},
+	{"F", F}, {"F'", F_},
 };
 
 
