@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
+#include <stack>
 
 #include "node.hpp"
 #include "actions.hpp"
@@ -23,6 +24,21 @@ typedef std::pair<double,Node*> Pair;
 // typedef std::priority_queue<Pair, std::vector<Pair>, std::greater<Pair>> PriorityQueue;
 typedef std::unordered_set<State> Set;
 typedef std::queue<Node*> Queue;
+
+
+void solution(Node* node) {
+	std::stack<int> stk;
+	std::cout << "solution:";
+	while (node->action != NO_ACTION) {
+		stk.push(node->action);
+		node = node->parent;
+	}
+	while (!stk.empty()) {
+		std::cout << ' ' << action_name[stk.top()];
+		stk.pop();
+	}
+	std::cout << std::endl;
+}
 
 
 static bool dfs(Set& visited, Node* parent, int depth, int max_depth) {
@@ -107,7 +123,7 @@ bool search(Node* root, Lambda f, double cutoff) {
 	frontier.insert({0, root});
 
 	while(!frontier.empty()) {
-		std::cout << visited.size() << std::endl;
+		// std::cout << visited.size() << std::endl;
 		// std::cout << frontier.size() << std::endl;
 		Node* parent = (*frontier.begin()).second;
 		frontier.erase(frontier.begin());
@@ -120,6 +136,7 @@ bool search(Node* root, Lambda f, double cutoff) {
 		visited.insert(parent->state);
 		if (goal_test(parent)) {
 			puts("REACHED GOAL STATE");
+			std::cout << "expanded nodes: " << visited.size() << std::endl;
 			solution(parent);
 			return true;
 		}

@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <unordered_map>
-#include <stack>
 
 #include "node.hpp"
 
@@ -141,18 +140,5 @@ Node* child_node(Node* parent, int action_id) {
 	return child;
 }
 
-
-void solution(Node* node) {
-	std::stack<int> stk;
-	while (node->action != NO_ACTION) {
-		stk.push(node->action);
-		node = node->parent;
-	}
-	while (!stk.empty()) {
-		std::cout << action_name[stk.top()];
-		stk.pop();
-	}
-	std::cout << std::endl;
-}
 
 #endif /* end of include guard: ACTIONS_HPP */
