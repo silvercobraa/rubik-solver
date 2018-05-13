@@ -6,6 +6,7 @@
 #include <set>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
 
 #include "node.hpp"
 #include "actions.hpp"
@@ -17,6 +18,9 @@
 
 // este set debe ser ordenado
 typedef std::set<std::pair<double,Node*>> PriorityQueue;
+typedef std::pair<double,Node*> Pair;
+// porque la priority_queue se demora mas que el set?
+// typedef std::priority_queue<Pair, std::vector<Pair>, std::greater<Pair>> PriorityQueue;
 typedef std::unordered_set<State> Set;
 typedef std::queue<Node*> Queue;
 
@@ -65,7 +69,6 @@ bool bfs(Node* root) {
 	Queue q;
 	Set v;
 	q.push(root);
-
 	while(!q.empty()) {
 		std::cout << v.size() << std::endl;
 		Node* parent = q.front();
