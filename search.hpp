@@ -28,7 +28,7 @@ typedef std::queue<Node*> Queue;
 
 void solution(Node* node) {
 	std::stack<int> stk;
-	std::cout << "solution:";
+	std::cout << "SOLUCION:";
 	while (node->action != NO_ACTION) {
 		stk.push(node->action);
 		node = node->parent;
@@ -46,19 +46,23 @@ static bool dfs(Set& visited, Node* parent, int depth, int max_depth) {
 		return false;
 	}
 	if (goal_test(parent)) {
-		puts("REACHED GOAL STATE");
+		puts("SOLUCION ENCONTRADA");
 		solution(parent);
 		return true;
 	}
-	std::cout << depth << ' ' << visited.size() <<  std::endl;
+	// std::cout << depth << ' ' << visited.size() <<  std::endl;
+	std::cout << depth << std::endl;
 	for (int act = 0; act < actions.size(); act++) {
 		if (act == reverse_action[parent->action]) {
 			continue;
 		}
 		Node* child = child_node(parent, act);
 		if (dfs(visited, child, depth + 1, max_depth)) {
+			free(child);
 			return true;
 		}
+		// D:
+		free(child);
 	}
 	return false;
 }
@@ -86,7 +90,7 @@ bool bfs(Node* root) {
 	Set v;
 	q.push(root);
 	while(!q.empty()) {
-		std::cout << v.size() << std::endl;
+		// std::cout << v.size() << std::endl;
 		Node* parent = q.front();
 		q.pop();
 		// si el estado del nodo actual ya fue visitado, lo ignoramos
@@ -95,7 +99,7 @@ bool bfs(Node* root) {
 		}
 		v.insert(parent->state);
 		if (goal_test(parent)) {
-			puts("REACHED GOAL STATE");
+			puts("SOLUCION ENCONTRADA");
 			solution(parent);
 			return true;
 		}
@@ -109,7 +113,8 @@ bool bfs(Node* root) {
 			}
 		}
 	}
-	std::cout << "DIDN'T REACH GOAL STATE" << std::endl;
+	puts("SOLUCION NO ENCONTRADA.");
+	puts("PROBABLEMENTE TE EQUIVOCASTE EN INGRESAR EL ESTADO INICIAL.");
 	return false;
 }
 
@@ -135,8 +140,8 @@ bool search(Node* root, Lambda f, double cutoff) {
 		}
 		visited.insert(parent->state);
 		if (goal_test(parent)) {
-			puts("REACHED GOAL STATE");
-			std::cout << "expanded nodes: " << visited.size() << std::endl;
+			puts("SOLUCION ENCONTRADA");
+			std::cout << "NODOS EXPANDIDOS: " << visited.size() << std::endl;
 			solution(parent);
 			return true;
 		}
@@ -150,7 +155,8 @@ bool search(Node* root, Lambda f, double cutoff) {
 			}
 		}
 	}
-	std::cout << "DIDN'T REACH GOAL STATE" << std::endl;
+	puts("SOLUCION NO ENCONTRADA.");
+	puts("PROBABLEMENTE TE EQUIVOCASTE EN INGRESAR EL ESTADO INICIAL.");
 	return false;
 }
 
@@ -164,6 +170,16 @@ bool greedy(Node* root, Heuristic h) {
 
 bool a_star(Node* root, Heuristic h) {
 	auto lambda = [&](Node* n){return n->cost + h(n);};
+	return search(root, lambda, A_STAR_CUTOFF);
+}
+
+
+// Heuristic path algorithm
+// https://www.cs.helsinki.fi/u/bmmalone/heuristic-search-fall-2013/Korf1996.pdf
+// f(n) = (1 - w)*g(n) + w*h(n)
+bool hpa(Node* root, Heuristic h) {
+	double w = 0.75;
+	auto lambda = [&](Node* n){return (1 - w)*(n->cost) + w*h(n);};
 	return search(root, lambda, A_STAR_CUTOFF);
 }
 
