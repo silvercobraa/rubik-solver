@@ -85,6 +85,7 @@ struct Node {
 	uint64_t state;
 	int cost;
 	int action;
+	// int depth;
 	struct Node* parent; // el nodo que se visitó antes que éste
 	bool operator< (const Node& node) const {
 		return state < node.state;

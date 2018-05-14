@@ -127,6 +127,7 @@ Node* make_root() {
 	root->parent = NULL;
 	root->cost = 0;
 	root->action = NO_ACTION;
+	// root->depth = 0;
 	return root;
 }
 
@@ -137,6 +138,7 @@ Node* child_node(Node* parent, int action_id) {
 	child->action = action_id;
 	child->parent = parent;
 	child->cost = parent->cost + action_cost[action_id];
+	// child->depth = parent->depth + 1;
 	return child;
 }
 
