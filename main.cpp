@@ -34,6 +34,45 @@ uint64_t string_to_state(string s) {
 }
 
 
+// las fotos seran capturadas en orden BLFRUD
+// deberia documentar mejor esto...
+string faces_to_corners(string s) {
+
+	string result = string();
+	result.resize(21);
+	result[5] = s[0];
+	result[17] = s[1];
+	result[11] = s[2];
+	// result[23] = s[3]; // este es el z de la esquina LDB
+
+	result[15] = s[4];
+	result[12] = s[5];
+	// result[21] = s[6];  // este es el x de la esquina LDB
+	result[18] = s[7];
+
+	result[14] = s[8];
+	result[2] = s[9];
+	result[20] = s[10];
+	result[8] = s[11];
+
+	result[0] = s[12];
+	result[3] = s[13];
+	result[6] = s[14];
+	result[9] = s[15];
+
+	result[13] = s[16];
+	result[16] = s[17];
+	result[1] = s[18];
+	result[4] = s[19];
+
+	result[7] = s[20];
+	result[10] = s[21];
+	// result[19] = s[22];  // este es el y de la esquina LDB
+	result[19] = s[22];
+	cout << result << endl;
+	return result;
+}
+
 int main(int argc, char const *argv[]) {
 	if (argc < 2) {
 		puts("SE DEBE INGRESAR EL ALGORITMO DE BUSQUEDA EN argv[1]");
@@ -44,8 +83,13 @@ int main(int argc, char const *argv[]) {
 
 	// Heuristic h = heuristic_bad_pieces;
 	Heuristic h = heuristic_manhattan_distance;
-
-	root->state = string_to_state("bow""rwb""gwr""ygo""gry""oby""bry");
+	puts("HOLA HUMANO, SOY UNA INTELIGENCIA ARTIFICIAL QUE RESUELVE CUBOS DE RUBIK 2x2x2");
+	puts("INGRESA EL CUBO QUE DESEES RESOLVER: ");
+	string s;
+	cin >> s;
+	// root->state = string_to_state("yob""bwo""gyo""rwg""ygr""ryb""rbw");
+	root->state = string_to_state(faces_to_corners(s));
+	// root->state = string_to_state(s);
 	// scramble(root, read_moves());
 	// random_scramble(root, 5);
 
