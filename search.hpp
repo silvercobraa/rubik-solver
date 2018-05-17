@@ -178,9 +178,9 @@ bool a_star(Node* root, Heuristic h) {
 // https://www.cs.helsinki.fi/u/bmmalone/heuristic-search-fall-2013/Korf1996.pdf
 // f(n) = (1 - w)*g(n) + w*h(n)
 bool hpa(Node* root, Heuristic h) {
-	double w = 0.75;
+	double w = 0.8;
 	auto lambda = [&](Node* n){return (1 - w)*(n->cost) + w*h(n);};
-	return search(root, lambda, A_STAR_CUTOFF);
+	return search(root, lambda, 99999999999);
 }
 
 
