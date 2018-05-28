@@ -53,7 +53,7 @@ static bool dfs(Set& visited, Node* parent, int depth, int max_depth) {
 	// std::cout << depth << ' ' << visited.size() <<  std::endl;
 	std::cout << depth << std::endl;
 	for (int act = 0; act < actions.size(); act++) {
-		if (act == reverse_action[parent->action]) {
+		if (reverse_action[act] == parent->action) {
 			continue;
 		}
 		Node* child = child_node(parent, act);
@@ -105,7 +105,7 @@ bool bfs(Node* root) {
 			return true;
 		}
 		for (int act = 0; act < actions.size(); act++) {
-			if (act == reverse_action[parent->action]) {
+			if (reverse_action[act] == parent->action) {
 				continue;
 			}
 			Node* child = child_node(parent, act);
@@ -147,7 +147,7 @@ bool search(Node* root, Lambda f, double cutoff) {
 			return true;
 		}
 		for (int act = 0; act < actions.size(); act++) {
-			if (act == reverse_action[parent->action]) {
+			if (reverse_action[act] == parent->action) {
 				continue;
 			}
 			Node* child = child_node(parent, act);
