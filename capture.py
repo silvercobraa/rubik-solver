@@ -44,7 +44,8 @@ while True:
     ret, frame = cap.read()
     # Our operations on the frame come here
     # hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    #hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    hsv_frame = frame
 
     cv2.rectangle(hsv_frame,(200,120), (260,180), (255,0,255), 2)
     cv2.rectangle(hsv_frame,(380,120), (440,180), (255,0,255), 2)

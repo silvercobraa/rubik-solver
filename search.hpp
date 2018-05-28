@@ -100,6 +100,7 @@ bool bfs(Node* root) {
 		v.insert(parent->state);
 		if (goal_test(parent)) {
 			puts("SOLUCION ENCONTRADA");
+			std::cout << "NODOS EXPANDIDOS: " << v.size() << std::endl;
 			solution(parent);
 			return true;
 		}

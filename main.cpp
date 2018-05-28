@@ -37,7 +37,16 @@ uint64_t string_to_state(string s) {
 // las fotos seran capturadas en orden BLFRUD
 // deberia documentar mejor esto...
 string faces_to_corners(string s) {
-
+	map<char, int> count;
+	for (auto c: s) {
+		count[c]++;
+	}
+	for (auto p: count) {
+		if (p.second != 4) {
+			cout << "ERROR: HAY " << p.second << " CUADROS DE COLOR '" << p.first << "'\n";
+			exit(EXIT_FAILURE);
+		}
+	}
 	string result = string();
 	result.resize(21);
 	result[5] = s[0];
