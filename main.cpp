@@ -84,21 +84,21 @@ string faces_to_corners(string s) {
 
 int main(int argc, char const *argv[]) {
 	if (argc < 2) {
-		puts("SE DEBE INGRESAR EL ALGORITMO DE BUSQUEDA EN argv[1]");
-		puts("(OPCIONES: bfs, ids, astar, greedy, pd, pdgen)");
+		cerr << "SE DEBE INGRESAR EL ALGORITMO DE BUSQUEDA EN argv[1]" << endl;
+		cerr << "(OPCIONES: bfs, ids, astar, greedy, pd, pdgen)" << endl;
 		exit(EXIT_FAILURE);
 	}
 	Node* root = make_root();
 
 	// Heuristic h = heuristic_bad_pieces;
 	Heuristic h = heuristic_manhattan_distance;
-	puts("HOLA HUMANO, SOY UNA INTELIGENCIA ARTIFICIAL QUE RESUELVE CUBOS DE RUBIK 2x2x2");
-	puts("INGRESA EL CUBO QUE DESEES RESOLVER: ");
+	cerr << "HOLA HUMANO, SOY UNA INTELIGENCIA ARTIFICIAL QUE RESUELVE CUBOS DE RUBIK 2x2x2" << endl;
+	cerr << "INGRESA EL CUBO QUE DESEES RESOLVER: " << endl;
 	string s;
 	cin >> s;
 	// root->state = string_to_state("yob""bwo""gyo""rwg""ygr""ryb""rbw");
 	root->state = string_to_state(faces_to_corners(s));
-	// root->state = string_to_state(s);
+	root->state = string_to_state(s);
 	// scramble(root, read_moves());
 	// random_scramble(root, 5);
 

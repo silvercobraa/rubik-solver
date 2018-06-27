@@ -16,6 +16,8 @@
 // a que costo la búsqueda debe detenerse
 #define A_STAR_CUTOFF 15.0
 #define GREEDY_CUTOFF 30.0
+#define HPA_W 0.9
+#define INF 99999999
 
 // este set debe ser ordenado
 typedef std::set<std::pair<double,Node*>> PriorityQueue;
@@ -179,9 +181,9 @@ bool a_star(Node* root, Heuristic h) {
 // https://www.cs.helsinki.fi/u/bmmalone/heuristic-search-fall-2013/Korf1996.pdf
 // f(n) = (1 - w)*g(n) + w*h(n)
 bool hpa(Node* root, Heuristic h) {
-	double w = 0.8;
+	double w = HPA_W;
 	auto lambda = [&](Node* n){return (1 - w)*(n->cost) + w*h(n);};
-	return search(root, lambda, 99999999999);
+	return search(root, lambda, INF);
 }
 
 
