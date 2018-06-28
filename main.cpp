@@ -96,11 +96,7 @@ int main(int argc, char const *argv[]) {
 	cerr << "INGRESA EL CUBO QUE DESEES RESOLVER: " << endl;
 	string s;
 	cin >> s;
-	// root->state = string_to_state("yob""bwo""gyo""rwg""ygr""ryb""rbw");
 	root->state = string_to_state(faces_to_corners(s));
-	root->state = string_to_state(s);
-	// scramble(root, read_moves());
-	// random_scramble(root, 5);
 
 	string argument(argv[1]);
 	if (argument == "bfs") {
