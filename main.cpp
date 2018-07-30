@@ -1,6 +1,8 @@
 #include <iostream>
 #include <map>
 
+#include <unistd.h>
+
 #include "search.hpp"
 #include "scramble.hpp"
 #include "database.hpp"
@@ -78,7 +80,7 @@ string faces_to_corners(string s) {
 	result[10] = s[21];
 	// result[19] = s[22];  // este es el y de la esquina LDB
 	result[19] = s[22];
-	cout << result << endl;
+	// cout << result << endl;
 	return result;
 }
 
@@ -92,38 +94,68 @@ int main(int argc, char const *argv[]) {
 
 	// Heuristic h = heuristic_bad_pieces;
 	Heuristic h = heuristic_manhattan_distance;
-	cerr << "HOLA HUMANO, SOY UNA INTELIGENCIA ARTIFICIAL QUE RESUELVE CUBOS DE RUBIK 2x2x2" << endl;
-	cerr << "INGRESA EL CUBO QUE DESEES RESOLVER: " << endl;
 	string s;
-	cin >> s;
-	root->state = string_to_state(faces_to_corners(s));
+	clock_t begin;
+	clock_t end;
 
 	string argument(argv[1]);
+
+	if (argument != "pd") {
+		cerr << "HOLA HUMANO, SOY UNA INTELIGENCIA ARTIFICIAL QUE RESUELVE CUBOS DE RUBIK 2x2x2" << endl;
+		cerr << "INGRESA EL CUBO QUE DESEES RESOLVER: " << endl;
+		cin >> s;
+		root->state = string_to_state(faces_to_corners(s));
+	}
+
 	if (argument == "bfs") {
 		puts("EJECUTANDO BUSQUEDA EN ANCHURA...");
+		begin = clock();
 		bfs(root);
+		end = clock();
 	}
 	else if (argument == "ids") {
 		puts("EJECUTANDO BUSQUEDA EN PROFUNDIDAD...");
+		begin = clock();
 		ids(root);
+		end = clock();
 	}
 	else if (argument == "astar") {
 		puts("EJECUTANDO BUSQUEDA A*...");
+		begin = clock();
 		a_star(root, h);
+		end = clock();
 	}
 	else if (argument == "greedy") {
 		puts("EJECUTANDO BUSQUEDA GREEDY...");
+		begin = clock();
 		greedy(root, h);
+		end = clock();
 	}
 	else if (argument == "hpa") {
 		puts("EJECUTANDO BUSQUEDA HPA...");
+		begin = clock();
 		hpa(root, h);
+		end = clock();
 	}
 	else if (argument == "pd") {
-		puts("CARGANDO BASE DE DATOS...");
-		load_pattern_database("compact_pattern_database.txt");
-		puts("...BASE DE DATOS CARGADA");
-		pattern_database_search("compact_pattern_database.txt", root);
+		cerr << endl << "HOLA HUMANO," << endl;
+		cerr << "SOY UNA INTELIGENCIA ARTIFICIAL QUE RESUELVE CUBOS RUBIK 2x2x2" << endl;
+		cerr << endl << "POR FAVOR ESPERE UNOS SEGUNDOS..." << endl;
+		load_pattern_database("pd.txt");
+		cerr << "...CARGA COMPLETADA" << endl;
+		cerr << endl << "INGRESA EL CUBO QUE DESEAS RESOLVER: " << endl;
+		while ((cin >> s)) {
+			root->state = string_to_state(faces_to_corners(s));
+			string ans = pattern_database_search("pd.txt", root);
+			if (ans != "") {
+				cerr << endl << "SOLUCION: " << ans << endl << endl;
+				cerr << "ESE CUBO ESTUVO MUY FACIL. POR FAVOR INGRESE UNO MAS DIFICIL" << endl;
+			}
+			else {
+				cerr << "NO SE ENCONTRO SOLUCION. REVISA QUE EL ESTADO DEL CUBO ESTE BIEN INGRESADO" << endl;
+			}
+		}
+		cerr << "INGRESA EL CUBO QUE DESEES RESOLVER: " << endl;
 	}
 	else if (argument == "pdgen") {
 		cerr << "GENERANDO BASE DE DATOS..." << endl;
@@ -133,5 +165,7 @@ int main(int argc, char const *argv[]) {
 	else {
 		puts("ORDEN NO RECONOCIDA");
 	}
+	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+	cout << "TIEMPO: " << elapsed_secs << " s" << endl;
 	return 0;
 }
