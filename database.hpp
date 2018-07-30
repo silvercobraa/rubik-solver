@@ -68,20 +68,22 @@ void load_pattern_database(std::string pattern_database_file) {
 }
 
 
-void pattern_database_search(std::string pattern_database_file, Node* node) {
+// retorna un string con la secuencia de acciones,
+// un mensaje de que ya esta resuelto el cubo (si lo está)
+// o un string vacio si no se encontro la solucion.
+std::string pattern_database_search(std::string pattern_database_file, Node* node) {
 
 	if (!PATTERN_DATABASE_LOADED) {
 		load_pattern_database(pattern_database_file);
 	}
 	if (pattern_database.find(node->state) != pattern_database.end()) {
-		std::cout << pattern_database[node->state] << std::endl;
-		return;
+		return pattern_database[node->state];
 	}
 	// Esto no debería ocurrir, nunca.
 	// Si entramos acá, es porque, o bien faltan estados en la base de datos,
 	// hay un bug en alguna de las rotaciones de cubo completo, o
 	// los prefijos están mal ingresados.
-	std::cout << "No se encontró la solución :(" << std::endl;
+	return "";
 }
 
 
