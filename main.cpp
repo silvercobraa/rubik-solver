@@ -100,12 +100,12 @@ int main(int argc, char const *argv[]) {
 
 	string argument(argv[1]);
 
-	if (argument != "pd") {
-		cerr << "HOLA HUMANO, SOY UNA INTELIGENCIA ARTIFICIAL QUE RESUELVE CUBOS DE RUBIK 2x2x2" << endl;
-		cerr << "INGRESA EL CUBO QUE DESEES RESOLVER: " << endl;
-		cin >> s;
-		root->state = string_to_state(faces_to_corners(s));
-	}
+	// if (argument != "pd") {
+	// 	cerr << "HOLA HUMANO, SOY UNA INTELIGENCIA ARTIFICIAL QUE RESUELVE CUBOS DE RUBIK 2x2x2" << endl;
+	// 	cerr << "INGRESA EL CUBO QUE DESEES RESOLVER: " << endl;
+	// 	cin >> s;
+	// 	root->state = string_to_state(faces_to_corners(s));
+	// }
 
 	if (argument == "bfs") {
 		puts("EJECUTANDO BUSQUEDA EN ANCHURA...");
@@ -146,16 +146,20 @@ int main(int argc, char const *argv[]) {
 		cerr << endl << "INGRESA EL CUBO QUE DESEAS RESOLVER: " << endl;
 		while ((cin >> s)) {
 			root->state = string_to_state(faces_to_corners(s));
+			begin = clock();
 			string ans = pattern_database_search("pd.txt", root);
+			end = clock();
 			if (ans != "") {
 				cerr << endl << "SOLUCION: " << ans << endl << endl;
+				double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+				printf("TIEMPO: %.6lf s\n", elapsed_secs);
 				cerr << "ESE CUBO ESTUVO MUY FACIL. POR FAVOR INGRESE UNO MAS DIFICIL" << endl;
 			}
 			else {
 				cerr << "NO SE ENCONTRO SOLUCION. REVISA QUE EL ESTADO DEL CUBO ESTE BIEN INGRESADO" << endl;
 			}
 		}
-		cerr << "INGRESA EL CUBO QUE DESEES RESOLVER: " << endl;
+		return 0;
 	}
 	else if (argument == "pdgen") {
 		cerr << "GENERANDO BASE DE DATOS..." << endl;
@@ -166,6 +170,6 @@ int main(int argc, char const *argv[]) {
 		puts("ORDEN NO RECONOCIDA");
 	}
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-	cout << "TIEMPO: " << elapsed_secs << " s" << endl;
+	printf("TIEMPO: %.6lf s\n", elapsed_secs);
 	return 0;
 }

@@ -31,12 +31,12 @@ typedef std::queue<Node*> Queue;
 void solution(Node* node) {
 	std::stack<int> stk;
 	std::cout << "SOLUCION:";
-	while (node->action != NO_ACTION) {
+	while (node->action != NULL_ACTION) {
 		stk.push(node->action);
 		node = node->parent;
 	}
 	while (!stk.empty()) {
-		std::cout << ' ' << action_name[stk.top()];
+		std::cout << ' ' << actions[stk.top()].name;
 		stk.pop();
 	}
 	std::cout << std::endl;
@@ -54,11 +54,11 @@ static bool dfs(Set& visited, Node* parent, int depth, int max_depth) {
 	}
 	// std::cout << depth << ' ' << visited.size() <<  std::endl;
 	std::cout << depth << std::endl;
-	for (int act = 0; act < actions.size(); act++) {
-		if (reverse_action[act] == parent->action) {
+	for (auto action : actions) {
+		if (action.inverse == parent->action) {
 			continue;
 		}
-		Node* child = child_node(parent, act);
+		Node* child = child_node(parent, action);
 		if (dfs(visited, child, depth + 1, max_depth)) {
 			free(child);
 			return true;
@@ -106,11 +106,11 @@ bool bfs(Node* root) {
 			solution(parent);
 			return true;
 		}
-		for (int act = 0; act < actions.size(); act++) {
-			if (reverse_action[act] == parent->action) {
+		for (auto action : actions) {
+			if (action.inverse == parent->action) {
 				continue;
 			}
-			Node* child = child_node(parent, act);
+			Node* child = child_node(parent, action);
 			if (v.find(child->state) == v.end()) {
 				q.push(child);
 			}
@@ -148,11 +148,11 @@ bool search(Node* root, Lambda f, double cutoff) {
 			solution(parent);
 			return true;
 		}
-		for (int act = 0; act < actions.size(); act++) {
-			if (reverse_action[act] == parent->action) {
+		for (auto action : actions) {
+			if (action.inverse == parent->action) {
 				continue;
 			}
-			Node* child = child_node(parent, act);
+			Node* child = child_node(parent, action);
 			if (visited.find(child->state) == visited.end()) {
 				frontier.insert({f(child), child});
 			}

@@ -16,12 +16,8 @@
 // alguna de las anteriormente descritas, mas un cambio en el sistema de referencia.
 
 // Definición de colores
-#define BLUE 0L
-#define RED 1L
-#define YELLOW 2L
-#define GREEN 3L
-#define ORANGE 4L
-#define WHITE 5L
+enum Color {NO_COLOR, RED, BLUE, YELLOW, WHITE, GREEN, ORANGE};
+// enum Color {BLUE, RED, YELLOW, GREEN, ORANGE, WHITE};
 
 // Mascaras que entregan los bits pertenecientes a una pieza determinada. Ej: RUF_MASK entrega
 // los 9 bits correspondientes a la esquina derecha superior frontal (cuando se hace el & con el estado actual y se hace el desplazamiento correspondiente).
@@ -50,34 +46,35 @@ typedef uint64_t State;
 // L: GREEN
 // D: ORANGE
 // B: WHITE
+
 const uint64_t solved_state =
-	(BLUE << (X + RUF)) |
-	(RED << (Y + RUF)) |
-	(YELLOW << (Z + RUF)) |
+	(uint64_t(BLUE) << (X + RUF)) |
+	(uint64_t(RED) << (Y + RUF)) |
+	(uint64_t(YELLOW) << (Z + RUF)) |
 
-	(BLUE << (X + RUB)) |
-	(RED << (Y + RUB)) |
-	(WHITE << (Z + RUB)) |
+	(uint64_t(BLUE) << (X + RUB)) |
+	(uint64_t(RED) << (Y + RUB)) |
+	(uint64_t(WHITE) << (Z + RUB)) |
 
-	(BLUE << (X + RDF)) |
-	(ORANGE << (Y + RDF)) |
-	(YELLOW << (Z + RDF)) |
+	(uint64_t(BLUE) << (X + RDF)) |
+	(uint64_t(ORANGE) << (Y + RDF)) |
+	(uint64_t(YELLOW) << (Z + RDF)) |
 
-	(BLUE << (X + RDB)) |
-	(ORANGE << (Y + RDB)) |
-	(WHITE << (Z + RDB)) |
+	(uint64_t(BLUE) << (X + RDB)) |
+	(uint64_t(ORANGE) << (Y + RDB)) |
+	(uint64_t(WHITE) << (Z + RDB)) |
 
-	(GREEN << (X + LUF)) |
-	(RED << (Y + LUF)) |
-	(YELLOW << (Z + LUF)) |
+	(uint64_t(GREEN) << (X + LUF)) |
+	(uint64_t(RED) << (Y + LUF)) |
+	(uint64_t(YELLOW) << (Z + LUF)) |
 
-	(GREEN << (X + LUB)) |
-	(RED << (Y + LUB)) |
-	(WHITE << (Z + LUB)) |
+	(uint64_t(GREEN) << (X + LUB)) |
+	(uint64_t(RED) << (Y + LUB)) |
+	(uint64_t(WHITE) << (Z + LUB)) |
 
-	(GREEN << (X + LDF)) |
-	(ORANGE << (Y + LDF)) |
-	(YELLOW << (Z + LDF))
+	(uint64_t(GREEN) << (X + LDF)) |
+	(uint64_t(ORANGE) << (Y + LDF)) |
+	(uint64_t(YELLOW) << (Z + LDF))
 ;
 
 

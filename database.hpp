@@ -38,13 +38,14 @@ void generate_pattern_database(Node* root) {
 		s.insert(parent->state);
 		// std::cout << s.size() << std::endl;
 		std::cout << parent->state;
+		// printf("%lx", parent->state);
 		std::cout << ' ';
-		for (Node* aux = parent; aux->action != NO_ACTION; aux = aux->parent) {
-			std::cout << action_name[reverse_action[aux->action]];
+		for (Node* aux = parent; aux->action != NULL_ACTION; aux = aux->parent) {
+			std::cout << actions[actions[aux->action].inverse].name;
 		}
 		std::cout << std::endl;
-		for (int act = 0; act < actions.size(); act++) {
-			Node* child = child_node(parent, act);
+		for (auto action : actions) {
+			Node* child = child_node(parent, action);
 			if (!visited(s, child)) {
 				q.push(child);
 			}

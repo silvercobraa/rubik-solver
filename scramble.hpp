@@ -21,8 +21,8 @@ void random_scramble(Node* root, int moves) {
 	srand(time(0));
 	for (int i = 0; i < moves; i++) {
 		int r = rand() % actions.size();
-		std::cout << action_name[r] << ' ';
-		root->state = actions[r](root->state);
+		std::cout << actions[r].name << ' ';
+		root->state = actions[r].apply_to(root->state);
 	}
 	std::cout << std::endl;
 	return;
